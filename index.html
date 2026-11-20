@@ -1,0 +1,3083 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>منصة الاختبارات التفاعلية الذكية — Mr / Omar Abd Al Hady</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+
+  <style>
+    :root {
+      --bg-app: #f1f5f9;
+      --bg-card: #ffffff;
+      --bg-soft: #f8fafc;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-glow: rgba(37, 99, 235, 0.22);
+      --accent: #7c3aed;
+      --success: #059669;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --border: #e2e8f0;
+      --radius-lg: 22px;
+      --radius-md: 15px;
+      --radius-sm: 10px;
+      --shadow-card: 0 14px 35px -12px rgba(15, 23, 42, 0.1), 0 4px 12px -4px rgba(15, 23, 42, 0.05);
+      --shadow-float: 0 20px 45px -10px rgba(37, 99, 235, 0.28);
+      --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Cairo', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 12% 10%, rgba(37, 99, 235, 0.08), transparent 42%),
+        radial-gradient(circle at 88% 85%, rgba(124, 58, 237, 0.08), transparent 45%),
+        var(--bg-app);
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    body.protected-mode {
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand-mini {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 0.98rem;
+      color: var(--text-main);
+    }
+
+    /* Adjusted header logo box so custom physics logo fits cleanly without clipping */
+    .brand-mini img {
+      width: auto;
+      max-width: 125px;
+      height: 40px;
+      border-radius: 10px;
+      object-fit: contain;
+      padding: 2px 6px;
+      border: 1.5px solid var(--border);
+      background: #ffffff;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .container {
+      max-width: 920px;
+      margin: 24px auto 60px;
+      padding: 0 16px;
+    }
+
+    .container.wide {
+      max-width: 1180px;
+    }
+
+    .screen {
+      display: none;
+      animation: screenEnter 0.45s var(--ease-spring) forwards;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes screenEnter {
+      from { opacity: 0; transform: translateY(18px) scale(0.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes questionSlideIn {
+      from { opacity: 0; transform: translateX(-32px) scale(0.985); }
+      to { opacity: 1; transform: translateX(0) scale(1); }
+    }
+
+    .question-animate {
+      animation: questionSlideIn 0.42s var(--ease-spring) forwards;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      padding: 26px;
+      margin-bottom: 20px;
+    }
+
+    .hero-card {
+      text-align: center;
+      padding: 34px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--primary), var(--accent), #06b6d4);
+    }
+
+    /* Adjusted welcome logo frame for balanced proportions and clean spacing */
+    .hero-logo {
+      width: auto;
+      max-width: 240px;
+      height: 112px;
+      border-radius: 20px;
+      object-fit: contain;
+      background: #ffffff;
+      border: 2px solid var(--border);
+      padding: 8px 14px;
+      margin: 0 auto 14px;
+      display: block;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      background: rgba(37, 99, 235, 0.1);
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+
+    .pill.comprehensive {
+      background: rgba(124, 58, 237, 0.12);
+      color: var(--accent);
+    }
+
+    h1.exam-title {
+      font-size: clamp(1.45rem, 3.2vw, 2.1rem);
+      font-weight: 900;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.98rem;
+      max-width: 660px;
+      margin: 0 auto 20px;
+    }
+
+    .meta-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .meta-box {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      text-align: center;
+    }
+
+    .meta-box .label { font-size: 0.78rem; color: var(--text-muted); font-weight: 700; }
+    .meta-box .val { font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-top: 2px; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+    .form-group { margin-bottom: 14px; }
+
+    label.field-label {
+      display: block;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    .field-hint {
+      display: block;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="password"],
+    input[type="url"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      background: #fff;
+      color: var(--text-main);
+      font-size: 0.95rem;
+    }
+
+    input.code-input {
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 800;
+      direction: ltr;
+      text-align: left;
+    }
+
+    textarea { min-height: 110px; resize: vertical; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 22px;
+      border-radius: var(--radius-sm);
+      border: none;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; }
+    .btn-accent { background: linear-gradient(135deg, var(--accent), #6d28d9); color: #fff; }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-outline { background: #fff; color: var(--text-main); border: 1.5px solid var(--border); }
+    .btn-sm { padding: 8px 14px; font-size: 0.84rem; border-radius: 8px; }
+    .btn-lg { padding: 14px 28px; font-size: 1.05rem; border-radius: var(--radius-md); width: 100%; }
+
+    .exam-code-bar {
+      background: rgba(37, 99, 235, 0.05);
+      border: 1.5px solid rgba(37, 99, 235, 0.22);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      margin-bottom: 18px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .rules-list {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      margin: 16px 0;
+    }
+
+    .rules-list li { margin-bottom: 8px; font-size: 0.95rem; }
+
+    .agree-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(37, 99, 235, 0.06);
+      border: 1.5px dashed rgba(37, 99, 235, 0.35);
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      margin-bottom: 18px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .agree-box input { width: 20px; height: 20px; accent-color: var(--primary); }
+
+    .exam-hud {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      box-shadow: var(--shadow-card);
+      margin-bottom: 18px;
+    }
+
+    .hud-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .q-counter { font-weight: 900; font-size: 1.02rem; }
+
+    .timer-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #0f172a;
+      color: #fff;
+      padding: 7px 16px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 1rem;
+    }
+
+    .timer-pill.danger { background: var(--danger); }
+
+    .progress-track { height: 9px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width 0.45s var(--ease-spring); }
+
+    .q-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .no-back-badge {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--warning);
+      background: rgba(217, 119, 6, 0.12);
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    .q-image-frame {
+      position: relative;
+      background: #ffffff;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      text-align: center;
+      margin-bottom: 20px;
+      min-height: 190px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .q-image-frame img {
+      max-width: 100%;
+      max-height: 440px;
+      width: auto;
+      height: auto;
+      border-radius: 10px;
+      object-fit: contain;
+      cursor: zoom-in;
+    }
+
+    .zoom-btn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(15, 23, 42, 0.78);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 11px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .choices-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 22px;
+      direction: ltr;
+    }
+
+    .choice-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 18px;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--border);
+      background: var(--bg-soft);
+      color: var(--text-main);
+      font-size: 1.05rem;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .choice-btn.selected {
+      border-color: var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff;
+    }
+
+    .choice-letter {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: #fff;
+      color: var(--primary);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+    }
+
+    .choice-btn.selected .choice-letter {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    .save-status { font-size: 0.82rem; color: var(--success); font-weight: 700; min-height: 22px; margin-bottom: 10px; }
+
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+    .tab-btn { padding: 9px 16px; border-radius: 10px; border: 1px solid var(--border); background: #fff; font-weight: 800; font-size: 0.9rem; cursor: pointer; color: var(--text-muted); }
+    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    .q-bank-item, .form-quota-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    }
+
+    .q-bank-item img {
+      width: 90px;
+      height: 56px;
+      object-fit: contain;
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .quota-input-wrap { display: flex; align-items: center; gap: 8px; }
+    .quota-input-wrap input { width: 85px; padding: 7px 10px; text-align: center; font-weight: 800; }
+
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-md); background: #fff; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th, td { padding: 11px 12px; text-align: right; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    th { background: var(--bg-soft); font-weight: 800; }
+
+    .badge-pass { background: rgba(5, 150, 105, 0.12); color: var(--success); padding: 3px 9px; border-radius: 999px; font-weight: 800; font-size: 0.78rem; }
+    .badge-fail { background: rgba(220, 38, 38, 0.12); color: var(--danger); padding: 3px 9px; border-radius: 999px; font-weight: 800; font-size: 0.78rem; }
+    .badge-topic { background: rgba(124, 58, 237, 0.1); color: var(--accent); padding: 2px 9px; border-radius: 999px; font-weight: 700; font-size: 0.76rem; }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open { display: flex; }
+    .modal-box { background: #fff; border-radius: var(--radius-lg); max-width: 780px; width: 100%; max-height: 90vh; overflow: auto; padding: 22px; }
+    .modal-box img.zoom-target { width: 100%; height: auto; border-radius: 12px; }
+
+    .toast {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #0f172a;
+      color: #fff;
+      padding: 11px 22px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      z-index: 120;
+      opacity: 0;
+      transition: all 0.35s var(--ease-spring);
+    }
+
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    #zoomModal { z-index: 110; }
+    .warn-badge { background: rgba(217, 119, 6, 0.14); color: var(--warning); padding: 2px 9px; border-radius: 999px; font-weight: 800; font-size: 0.74rem; margin-inline-start: 6px; display: inline-block; }
+    select.mini-select { width: auto; padding: 4px 8px; border-radius: 8px; font-weight: 800; font-size: 0.85rem; }
+    .import-report { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 14px; margin-top: 12px; font-size: 0.9rem; }
+    .import-report ul { margin: 8px 18px 0 0; color: var(--text-muted); font-size: 0.84rem; }
+    .btn-wa { background: #25d366; color: #fff; }
+    .badge-sent { background: rgba(5, 150, 105, 0.12); color: var(--success); padding: 3px 9px; border-radius: 999px; font-weight: 800; font-size: 0.76rem; }
+    .badge-unsent { background: rgba(100, 116, 139, 0.14); color: var(--text-muted); padding: 3px 9px; border-radius: 999px; font-weight: 800; font-size: 0.76rem; }
+    .q-bank-item.sa-row img { width: 150px; height: 92px; cursor: zoom-in; }
+    .bank-warn { background: rgba(217, 119, 6, 0.1); border: 1px solid rgba(217, 119, 6, 0.35); color: #92400e; border-radius: var(--radius-sm); padding: 8px 12px; font-size: 0.86rem; font-weight: 700; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand-mini">
+      <img id="topLogo" src="./LOGO_NAME.png" alt="Logo" />
+      <span id="topBrandName">PHYSICS — MR / OMAR ABD AL HADY</span>
+      <span class="brand-badge" id="topExamTypeBadge">Quiz</span>
+    </div>
+    <div class="top-actions">
+      <button class="btn btn-outline btn-sm" id="btnGoHome" onclick="switchScreen('welcomeScreen')">الرئيسية</button>
+      <button class="btn btn-outline btn-sm" id="btnOpenAdmin" onclick="openAdminGate()">لوحة المعلم</button>
+    </div>
+  </header>
+
+  <main class="container" id="mainContainer">
+
+    <section id="welcomeScreen" class="screen active">
+      <div class="card hero-card">
+        <img id="welcomeLogo" class="hero-logo" src="./LOGO_NAME.png" alt="Exam Logo" />
+        <div id="welcomeExamTypePill" class="pill">اختبار قصير (Quiz)</div>
+        <h1 class="exam-title" id="welcomeExamTitle">اختبار الفيزياء — الحركة والقوى</h1>
+        <p class="subtitle" id="welcomeExamDesc">أجب عن الأسئلة المصورة بدقة. يتم حفظ إجابتك تلقائياً بعد كل سؤال ولا يمكن الرجوع للسؤال السابق.</p>
+
+        <div class="meta-strip">
+          <div class="meta-box">
+            <div class="label">كود الامتحان</div>
+            <div class="val" id="metaExamCode" style="direction:ltr;">MAIN</div>
+          </div>
+          <div class="meta-box">
+            <div class="label">عدد الأسئلة</div>
+            <div class="val" id="metaQuestionsCount">3 أسئلة</div>
+          </div>
+          <div class="meta-box">
+            <div class="label">نظام الوقت</div>
+            <div class="val" id="metaTimerMode">10 دقائق كلي</div>
+          </div>
+          <div class="meta-box">
+            <div class="label">نوع الأسئلة</div>
+            <div class="val">Image MCQ (A, B, C, D)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 14px;">كود الامتحان وتسجيل بيانات الطالب</h2>
+
+        <div class="exam-code-bar">
+          <div style="flex: 1; min-width: 200px;">
+            <label class="field-label">كود الامتحان (Exam Code)</label>
+            <input type="text" id="studentExamCodeInput" class="code-input" placeholder="مثال: KIN01 أو MID1" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9_-]/g,'')" onkeydown="if(event.key==='Enter'){event.preventDefault();loadExamByCodeForStudent();}" />
+            <span class="field-hint">اكتب كود الامتحان الذي أرسله المعلم واضغط "تحميل الامتحان" لجلب الأسئلة والإعدادات.</span>
+          </div>
+          <button type="button" class="btn btn-accent" id="btnLoadExamByCode" onclick="loadExamByCodeForStudent()">🔎 تحميل الامتحان</button>
+        </div>
+
+        <form id="studentRegForm" onsubmit="handleStudentRegister(event)">
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="field-label">الاسم الثلاثي *</label>
+              <input type="text" id="stuName" required placeholder="مثال: أحمد محمود حسن" />
+            </div>
+            <div class="form-group">
+              <label class="field-label">كود الطالب (Student ID) *</label>
+              <input
+                type="text"
+                id="stuId"
+                class="code-input"
+                required
+                maxlength="10"
+                placeholder="T173"
+                oninput="sanitizeStudentIdInput(this)"
+              />
+              <span class="field-hint">حرف إنجليزي كبير (UPPERCASE) متبوع بأرقام فقط بدون فواصل، مثال: T173</span>
+            </div>
+            <div class="form-group">
+              <label class="field-label">المجموعة / الصف *</label>
+              <select id="stuGroup" required>
+                <option value="" disabled selected>اختر المجموعة...</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="field-label">رقم الهاتف (أو ولي الأمر) *</label>
+              <input type="text" id="stuPhone" required placeholder="01xxxxxxxxx" />
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg">الانتقال إلى تعليمات الامتحان ←</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="instructionsScreen" class="screen">
+      <div class="card">
+        <div class="pill">تعليمات هامة قبل البدء</div>
+        <h2 style="font-size: 1.4rem; font-weight: 900; margin-bottom: 10px;">قواعد وإرشادات أداء الاختبار</h2>
+        <p style="color: var(--text-muted);" id="customInstructionsText">
+          اقرأ كل سؤال في الصورة بتركيز ثم اختر الإجابة المناسبة (Option A, B, C, D).
+        </p>
+
+        <ul class="rules-list">
+          <li><strong>عرض سؤال بسؤال دون رجوع:</strong> بمجرد الضغط على "السؤال التالي" يتم تسجيل إجابتك ولا يمكنك العودة للسؤال السابق.</li>
+          <li><strong>حفظ تلقائي لحظي:</strong> تُسجل إجاباتك أولاً بأول لضمان عدم ضياعها عند حدوث أي مشكلة في الاتصال.</li>
+          <li><strong>مراقبة الخروج من الصفحة:</strong> الخروج المتكرر من نافذة الامتحان يُسجل كتنبيه وقد يؤدي لإنهاء الامتحان تلقائياً.</li>
+          <li><strong>الالتزام بالوقت:</strong> يُسلّم الامتحان تلقائياً فور انتهاء الوقت المحدد.</li>
+        </ul>
+
+        <label class="agree-box">
+          <input type="checkbox" id="agreeRulesCheckbox" onchange="toggleStartExamBtn()" />
+          <span>أقر بأنني قرأت التعليمات وأعلم أنه لا يمكن الرجوع إلى الأسئلة السابقة بعد الانتقال منها.</span>
+        </label>
+
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <button class="btn btn-outline" onclick="switchScreen('welcomeScreen')">تعديل البيانات</button>
+          <button class="btn btn-primary" id="btnStartExam" disabled style="flex: 1;" onclick="startExamSession()">
+            بدء الامتحان الآن 🚀
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="examScreen" class="screen">
+      <div class="exam-hud">
+        <div class="hud-top">
+          <div class="q-counter" id="qCounterLabel">السؤال 1 من 3</div>
+          <div class="timer-pill" id="timerDisplay">⏱️ 10:00</div>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="examProgressBar"></div>
+        </div>
+      </div>
+
+      <div class="card question-animate" id="questionCard">
+        <div class="q-header-row">
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <span class="pill" id="qPointsPill" style="margin-bottom: 0;">درجة السؤال: 1</span>
+            <span class="badge-topic" id="qTopicBadge"></span>
+          </div>
+          <span class="no-back-badge">⚠️ اتجاه واحد فقط — لا يوجد رجوع</span>
+        </div>
+
+        <div class="q-image-frame">
+          <button type="button" class="zoom-btn" onclick="openZoomModal()">🔍 تكبير الصورة</button>
+          <img id="currentQuestionImg" src="" alt="Question Image" onclick="openZoomModal()" />
+        </div>
+
+        <div class="choices-grid" id="choicesGrid">
+          <button type="button" class="choice-btn" data-opt="A" onclick="selectAnswer('A')">
+            <span>Option A</span>
+            <span class="choice-letter">A</span>
+          </button>
+          <button type="button" class="choice-btn" data-opt="B" onclick="selectAnswer('B')">
+            <span>Option B</span>
+            <span class="choice-letter">B</span>
+          </button>
+          <button type="button" class="choice-btn" data-opt="C" onclick="selectAnswer('C')">
+            <span>Option C</span>
+            <span class="choice-letter">C</span>
+          </button>
+          <button type="button" class="choice-btn" data-opt="D" onclick="selectAnswer('D')">
+            <span>Option D</span>
+            <span class="choice-letter">D</span>
+          </button>
+        </div>
+
+        <div class="save-status" id="autoSaveStatus"></div>
+
+        <button type="button" class="btn btn-primary btn-lg" id="btnNextQuestion" onclick="handleNextQuestion()">
+          السؤال التالي ←
+        </button>
+      </div>
+    </section>
+
+    <section id="resultScreen" class="screen">
+      <div class="card hero-card" id="resultSummaryBox">
+        <div class="pill" style="background: rgba(5, 150, 105, 0.14); color: var(--success);">تم تسليم الاختبار بنجاح</div>
+        <h2 style="font-size: 1.55rem; font-weight: 900; margin-bottom: 6px;" id="resultStudentTitle">شكراً لك</h2>
+        <p class="subtitle" id="resultStatusMsg">تم تسجيل إجاباتك ودرجاتك في قاعدة البيانات.</p>
+        <div id="scoreDisplayArea" style="margin: 18px 0;"></div>
+        <button type="button" class="btn btn-outline" onclick="resetForNewStudent()">العودة لشاشة البداية</button>
+      </div>
+
+      <div class="card" id="detailedReviewCard" style="display: none;">
+        <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 14px;">مراجعة الأسئلة والإجابات</h3>
+        <div id="reviewItemsContainer"></div>
+      </div>
+    </section>
+
+    <section id="adminScreen" class="screen">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;">
+          <div>
+            <h2 style="font-size: 1.35rem; font-weight: 900;">لوحة تحكم المعلم</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">إدارة أكواد الامتحانات، استيراد الأسئلة من Google Forms، وتصدير النتائج.</p>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="logoutAdmin()">خروج من اللوحة</button>
+        </div>
+
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="tabExams" onclick="switchAdminTab('tabExams')">0. الامتحانات والأكواد</button>
+          <button class="tab-btn" data-tab="tabSettings" onclick="switchAdminTab('tabSettings')">1. إعدادات الامتحان والربط</button>
+          <button class="tab-btn" data-tab="tabQuestions" onclick="switchAdminTab('tabQuestions')">2. بنك الأسئلة وتوزيع الدروس</button>
+          <button class="tab-btn" data-tab="tabResults" onclick="switchAdminTab('tabResults')">3. النتائج والتصدير (Excel & PDF)</button>
+        </div>
+
+        <div id="tabExams" class="admin-tab">
+          <div class="card" style="background: var(--bg-soft); margin-bottom: 18px;">
+            <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 8px;">حفظ / نشر الامتحان الحالي بكود امتحان</h3>
+            <p style="color: var(--text-muted); font-size: 0.86rem; margin-bottom: 12px;">
+              عند حفظ الامتحان بكود (مثلاً <strong>PHY_Q1</strong> أو <strong>CH2_EX</strong>)، يتم رفع الإعدادات والأسئلة والصور إلى Google Sheet ليتمكن أي طالب من فتحه بكوده من أي جهاز.
+            </p>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+              <input type="text" id="adminExamCodeInput" class="code-input" placeholder="مثال: PHY_Q1" style="max-width: 240px;" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9_-]/g,'')" />
+              <button class="btn btn-success" id="btnSaveExamToCloud" onclick="saveCurrentExamToSheet()">☁️ حفظ ونشر الامتحان بالكود</button>
+              <button class="btn btn-outline" onclick="createNewBlankExam()">+ بدء امتحان جديد فارغ</button>
+              <button class="btn btn-outline btn-sm" onclick="refreshExamsListFromSheet()">🔄 تحديث قائمة الامتحانات</button>
+            </div>
+            <div id="examShareLinkBox" style="margin-top: 10px; font-size: 0.86rem; color: var(--primary); font-weight: 700;"></div>
+          </div>
+
+          <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 10px;">الامتحانات المحفوظة على Google Sheet</h3>
+          <div id="cloudExamsList">
+            <p style="color: var(--text-muted); font-size: 0.9rem;">اضغط "تحديث قائمة الامتحانات" أو احفظ امتحاناً جديداً لعرض القائمة.</p>
+          </div>
+        </div>
+
+        <div id="tabSettings" class="admin-tab" style="display: none;">
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="field-label">اسم المنصة / المعلم</label>
+              <input type="text" id="cfgBrandName" />
+            </div>
+            <div class="form-group" style="display: none;">
+              <label class="field-label">رابط اللوجو (Logo URL أو مسار محلي)</label>
+              <input type="text" id="cfgLogoUrl" placeholder="./LOGO%20NAME.png أو https://..." />
+            </div>
+            <div class="form-group">
+              <label class="field-label">عنوان الامتحان</label>
+              <input type="text" id="cfgExamTitle" />
+            </div>
+            <div class="form-group">
+              <label class="field-label">نوع الامتحان</label>
+              <select id="cfgExamType">
+                <option value="Quiz">اختبار قصير (Quiz)</option>
+                <option value="Comprehensive">امتحان شامل (Comprehensive Exam)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="field-label">قائمة المجموعات المتاحة للطالب (افصل بين المجموعات بفاصلة `,`)</label>
+            <input type="text" id="cfgGroupsList" placeholder="Group A, Group B, Group C" />
+          </div>
+
+          <div class="form-group">
+            <label class="field-label">وصف قصير للامتحان</label>
+            <input type="text" id="cfgExamDesc" />
+          </div>
+
+          <div class="form-group">
+            <label class="field-label">تعليمات الامتحان</label>
+            <textarea id="cfgInstructions"></textarea>
+          </div>
+
+          <div class="grid-3">
+            <div class="form-group">
+              <label class="field-label">نظام الوقت</label>
+              <select id="cfgTimerMode">
+                <option value="total">وقت كلي للامتحان (بالدقائق)</option>
+                <option value="per_question">وقت لكل سؤال (بالثواني)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="field-label">قيمة الوقت</label>
+              <input type="number" id="cfgTimerValue" min="5" value="10" />
+            </div>
+            <div class="form-group">
+              <label class="field-label">الحد الأقصى للخروج من الصفحة</label>
+              <input type="number" id="cfgMaxTabSwitches" min="1" max="10" value="2" />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="field-label">إظهار النتيجة والمراجعة للطالب؟</label>
+              <select id="cfgShowResult">
+                <option value="true">نعم — إظهار الدرجة والمراجعة</option>
+                <option value="false">لا — إخفاء النتيجة لحين إعلانها</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="field-label">كلمة مرور لوحة المعلم</label>
+              <input type="password" id="cfgAdminPass" autocomplete="new-password" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="field-label">رابط Google Apps Script Web App URL</label>
+            <input type="url" id="cfgScriptUrl" placeholder="https://script.google.com/macros/s/....../exec" />
+          </div>
+
+          <div class="form-group">
+            <label class="field-label">كود الدولة لأرقام الواتساب (مصر = 20)</label>
+            <input type="text" id="cfgWaCountry" placeholder="20" style="max-width: 160px;" />
+          </div>
+
+          <button class="btn btn-primary" onclick="saveAdminSettings()">حفظ جميع الإعدادات ✓</button>
+        </div>
+
+        <div id="tabQuestions" class="admin-tab" style="display: none;">
+          <div class="card" style="background: var(--bg-soft); margin-bottom: 18px;">
+            <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 8px;">استيراد أسئلة درس من Google Form</h3>
+            <div class="grid-2" style="margin-bottom: 10px;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="field-label">اسم الدرس / الفورم (اختياري)</label>
+                <input type="text" id="customLessonNameInput" placeholder="مثال: الدرس الأول — كمية التحرك" />
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="field-label">رابط Google Form (/edit)</label>
+                <input type="url" id="googleFormUrlInput" placeholder="https://docs.google.com/forms/d/.../edit" />
+              </div>
+            </div>
+            <div style="margin-bottom: 12px; padding: 10px 12px; background: #fff; border: 1px dashed var(--border); border-radius: var(--radius-sm);">
+              <div style="font-weight: 800; font-size: 0.9rem; margin-bottom: 6px;">✂ قص الصور تلقائياً عند الاستيراد (٪ من حجم الصورة) — لإزالة رقم السؤال والأطراف</div>
+              <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; font-size: 0.85rem; font-weight: 700;">
+                <label>يسار <input type="number" id="impCropL" min="0" max="45" value="10" style="width: 75px;" /></label>
+                <label>أعلى <input type="number" id="impCropT" min="0" max="45" value="0" style="width: 75px;" /></label>
+                <label>يمين <input type="number" id="impCropR" min="0" max="45" value="0" style="width: 75px;" /></label>
+                <label>أسفل <input type="number" id="impCropB" min="0" max="45" value="0" style="width: 75px;" /></label>
+                <span style="color: var(--text-muted); font-weight: 600;">ضع 0 في الكل لعدم القص</span>
+              </div>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button class="btn btn-accent" id="btnImportForm" onclick="importFromGoogleForm()">+ استيراد وإضافة للبنك</button>
+              <button class="btn btn-outline btn-sm" onclick="clearAllQuestions()">مسح كل الأسئلة</button>
+            </div>
+            <div id="importReport" class="import-report" style="display: none;"></div>
+          </div>
+
+          <div class="card" style="background: var(--bg-soft); margin-bottom: 18px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+              <h3 style="font-size: 1.05rem; font-weight: 800;">توزيع عدد الأسئلة حسب الفورم / الدرس</h3>
+              <span class="pill" style="margin-bottom: 0;" id="totalDistributedCountPill">إجمالي أسئلة الامتحان: 0</span>
+            </div>
+            <div id="formQuotasContainer"></div>
+            <button class="btn btn-primary btn-sm" style="margin-top: 8px;" onclick="saveFormQuotas()">حفظ توزيع الدروس ✓</button>
+          </div>
+
+          <div class="card" style="background: var(--bg-soft); margin-bottom: 18px;">
+            <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 10px;">إضافة سؤال يدوي</h3>
+            <div class="grid-3">
+              <div class="form-group">
+                <label class="field-label">اسم الدرس / القسم</label>
+                <input type="text" id="newQLesson" value="أسئلة عامة" />
+              </div>
+              <div class="form-group">
+                <label class="field-label">اختر صورة السؤال</label>
+                <input type="file" id="newQFile" accept="image/*" onchange="handleQuestionFileUpload(event)" />
+              </div>
+              <div class="form-group">
+                <label class="field-label">الإجابة الصحيحة</label>
+                <select id="newQCorrect">
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                  <option value="D">D</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="field-label">أو رابط الصورة (Image URL)</label>
+              <input type="url" id="newQImgUrl" placeholder="https://..." />
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+              <label style="font-weight: 700; font-size: 0.9rem;">الدرجة:</label>
+              <input type="number" id="newQPoints" value="1" min="0.5" step="0.5" style="width: 95px;" />
+              <button class="btn btn-success" onclick="addManualQuestion()">+ إضافة السؤال للبنك</button>
+              <button class="btn btn-outline btn-sm" onclick="loadSampleQuestions()">تحميل أسئلة تجريبية</button>
+            </div>
+          </div>
+
+          <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 10px;">
+            الأسئلة الحالية في البنك (<span id="bankCountSpan">0</span>)
+          </h3>
+          <div id="bankWarnBox"></div>
+          <div id="questionsBankList"></div>
+        </div>
+
+        <div id="tabResults" class="admin-tab" style="display: none;">
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px;">
+            <button class="btn btn-primary btn-sm" onclick="fetchResultsFromSheet()">🔄 تحديث النتائج من Google Sheet</button>
+            <button class="btn btn-success btn-sm" onclick="exportResultsToExcel()">📊 تصدير Excel (.xlsx)</button>
+            <button class="btn btn-accent btn-sm" onclick="exportResultsToPDF()">📄 تصدير PDF</button>
+            <button class="btn btn-wa btn-sm" onclick="openBulkSendModal()">📲 إرسال النتائج للطلاب</button>
+            <button class="btn btn-outline btn-sm" onclick="printReports(getSortedFilteredResults())">🖨 تقارير الطلاب بالصور (PDF)</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteResultsFromSheet()">🗑 مسح كل نتائج هذا الامتحان</button>
+          </div>
+
+          <div class="grid-3" style="margin-bottom: 14px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="field-label">ترتيب حسب (Sort By)</label>
+              <select id="sortResultsBy" onchange="renderResultsTable()">
+                <option value="id_asc">كود الطالب (Student ID — T1, T173...)</option>
+                <option value="score_desc">الأعلى درجة</option>
+                <option value="score_asc">الأقل درجة</option>
+                <option value="time_asc">الأسرع في إنهاء الامتحان</option>
+                <option value="name_asc">الترتيب الأبجدي (الاسم)</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="field-label">فلترة بالمجموعة</label>
+              <select id="filterGroupSelect" onchange="renderResultsTable()">
+                <option value="ALL">كل المجموعات</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="field-label">خصوصية الأسماء</label>
+              <select id="privacyModeSelect" onchange="renderResultsTable()">
+                <option value="show_names">إظهار الاسم + الكود</option>
+                <option value="hide_names">إخفاء الأسماء (إظهار الكود فقط)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>كود الطالب</th>
+                  <th>اسم الطالب</th>
+                  <th>المجموعة</th>
+                  <th>الدرجة</th>
+                  <th>النسبة</th>
+                  <th>الوقت</th>
+                  <th>خروج الصفحة</th>
+                  <th>الحالة</th>
+                  <th>إجابات الطالب</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="resultsTableBody">
+                <tr><td colspan="11" style="text-align: center; padding: 24px;">اضغط "تحديث النتائج" لعرض البيانات المسجلة.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="modal-backdrop" id="zoomModal" onclick="closeZoomModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <strong>معاينة مكبرة لصورة السؤال</strong>
+        <button class="btn btn-outline btn-sm" onclick="closeZoomModal()">إغلاق ✕</button>
+      </div>
+      <img id="zoomModalImg" class="zoom-target" src="" alt="Zoomed Question" />
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="adminAuthModal" onclick="closeAdminAuthModal(event)">
+    <div class="modal-box" style="max-width: 420px;" onclick="event.stopPropagation()">
+      <h3 style="font-size: 1.2rem; font-weight: 900; margin-bottom: 8px;">دخول لوحة تحكم المعلم</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px;">أدخل كلمة المرور للوصول إلى الإعدادات والنتائج.</p>
+      <div class="form-group">
+        <input type="password" id="adminPassInput" placeholder="كلمة المرور" onkeydown="if(event.key==='Enter') verifyAdminPass()" />
+      </div>
+      <div style="display: flex; gap: 10px; justify-content: flex-end;">
+        <button class="btn btn-outline btn-sm" onclick="closeAdminAuthModal()">إلغاء</button>
+        <button class="btn btn-primary btn-sm" onclick="verifyAdminPass()">دخول</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="studentAnswersModal" onclick="if(event.target===this) closeStudentAnswers()">
+    <div class="modal-box" style="max-width: 880px;" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; margin-bottom: 12px;">
+        <div>
+          <strong id="saTitle" style="font-size: 1.1rem;"></strong>
+          <div id="saMeta" style="font-size: 0.88rem; color: var(--text-muted); margin-top: 3px;"></div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="closeStudentAnswers()">إغلاق ✕</button>
+      </div>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;">
+        <button class="btn btn-wa btn-sm" onclick="sendWhatsApp(currentAnswersRi)">📲 إرسال عبر واتساب</button>
+        <button class="btn btn-outline btn-sm" onclick="copyStudentMessage(currentAnswersRi)">📋 نسخ الرسالة</button>
+        <button class="btn btn-accent btn-sm" onclick="printReports([fetchedResults[currentAnswersRi]])">🖨 تقرير PDF بالصور</button>
+      </div>
+      <div id="saList"></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="bulkSendModal" onclick="if(event.target===this) closeBulkSendModal()">
+    <div class="modal-box" style="max-width: 900px;" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px;">
+        <strong style="font-size: 1.1rem;">إرسال النتائج والإجابات للطلاب</strong>
+        <button class="btn btn-outline btn-sm" onclick="closeBulkSendModal()">إغلاق ✕</button>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 10px;">
+        القائمة حسب فلتر المجموعة الحالي. واتساب لا يسمح بالإرسال التلقائي، لذلك كل زر يفتح المحادثة جاهزة بالرسالة وتضغط إرسال.
+      </p>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 12px;">
+        <button class="btn btn-wa btn-sm" onclick="openNextUnsent()">📲 افتح التالي (لم يُرسل له)</button>
+        <label style="font-size: 0.86rem; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+          <input type="checkbox" id="bulkOnlyUnsent" onchange="renderBulkList()" /> إظهار من لم يُرسل لهم فقط
+        </label>
+        <button class="btn btn-outline btn-sm" onclick="resetSentMarks()">إعادة ضبط حالة الإرسال</button>
+      </div>
+      <div id="bulkList"></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="cropModal" onclick="if(event.target===this) closeCropModal()">
+    <div class="modal-box" style="max-width: 880px;" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <strong style="font-size: 1.05rem;">✂ قص صورة السؤال</strong>
+        <button class="btn btn-outline btn-sm" onclick="closeCropModal()">إغلاق ✕</button>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 8px;">المناطق الحمراء هي اللي هتتشال. حرّك السلايدرز ثم اضغط تطبيق. القص نهائي على الصورة المحفوظة.</p>
+      <canvas id="cropCanvas" style="width: 100%; height: auto; border: 1px solid var(--border); border-radius: 10px; background: #fff;"></canvas>
+      <div class="grid-2" style="margin-top: 12px;">
+        <label style="font-weight: 700; font-size: 0.88rem;">يسار: <span id="cropLVal">0%</span><input type="range" id="cropL" min="0" max="45" value="0" style="width: 100%;" oninput="updateCropPreview()" /></label>
+        <label style="font-weight: 700; font-size: 0.88rem;">يمين: <span id="cropRVal">0%</span><input type="range" id="cropR" min="0" max="45" value="0" style="width: 100%;" oninput="updateCropPreview()" /></label>
+        <label style="font-weight: 700; font-size: 0.88rem;">أعلى: <span id="cropTVal">0%</span><input type="range" id="cropT" min="0" max="45" value="0" style="width: 100%;" oninput="updateCropPreview()" /></label>
+        <label style="font-weight: 700; font-size: 0.88rem;">أسفل: <span id="cropBVal">0%</span><input type="range" id="cropB" min="0" max="45" value="0" style="width: 100%;" oninput="updateCropPreview()" /></label>
+      </div>
+      <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.9rem; margin: 12px 0;">
+        <input type="checkbox" id="cropAllLesson" checked /> طبّق نفس القص على كل أسئلة هذا الدرس/الفورم
+      </label>
+      <div style="display: flex; gap: 10px; justify-content: flex-end;">
+        <button class="btn btn-outline btn-sm" onclick="closeCropModal()">إلغاء</button>
+        <button class="btn btn-success btn-sm" id="btnApplyCrop" onclick="applyCrop()">تطبيق القص ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toastBox"></div>
+
+  <script>
+    const STORAGE_KEY = 'smart_exam_platform_v4';
+    const STRICT_ID_REGEX = /^[A-Z][0-9]+$/;
+    const SENT_KEY = 'smart_exam_sent_marks_v1';
+
+    const IMG_DB_NAME = 'smart_exam_images_v1';
+    const IMG_STORE = 'images';
+    const imageCache = new Map();
+    const idbPersisted = new Set();
+    let imgDbPromise = null;
+    let idbReady = false;
+
+    function isDataUrl(v) { return typeof v === 'string' && v.startsWith('data:'); }
+
+    function openImgDb() {
+      if (imgDbPromise) return imgDbPromise;
+      imgDbPromise = new Promise((resolve) => {
+        try {
+          if (!window.indexedDB) return resolve(null);
+          const req = indexedDB.open(IMG_DB_NAME, 1);
+          req.onupgradeneeded = () => req.result.createObjectStore(IMG_STORE);
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => resolve(null);
+          req.onblocked = () => resolve(null);
+        } catch (e) { resolve(null); }
+      });
+      return imgDbPromise;
+    }
+
+    async function idbLoadAll() {
+      const db = await openImgDb();
+      if (!db) return false;
+      return new Promise((resolve) => {
+        const tx = db.transaction(IMG_STORE, 'readonly');
+        const req = tx.objectStore(IMG_STORE).openCursor();
+        req.onsuccess = () => {
+          const cur = req.result;
+          if (cur) {
+            imageCache.set(String(cur.key), cur.value);
+            idbPersisted.add(String(cur.key));
+            cur.continue();
+          }
+        };
+        tx.oncomplete = () => resolve(true);
+        tx.onerror = tx.onabort = () => resolve(false);
+      });
+    }
+
+    async function idbSyncImages() {
+      const db = await openImgDb();
+      if (!db) return false;
+      const liveIds = new Set();
+      const toPut = [];
+      (config.questions || []).forEach((q) => {
+        const id = String(q.id);
+        liveIds.add(id);
+        if (isDataUrl(q.image) && (!idbPersisted.has(id) || imageCache.get(id) !== q.image)) toPut.push([id, q.image]);
+      });
+      const toDelete = [...idbPersisted].filter((id) => !liveIds.has(id));
+      if (!toPut.length && !toDelete.length) return true;
+
+      return new Promise((resolve) => {
+        const tx = db.transaction(IMG_STORE, 'readwrite');
+        const st = tx.objectStore(IMG_STORE);
+        toPut.forEach(([id, v]) => st.put(v, id));
+        toDelete.forEach((id) => st.delete(id));
+        tx.oncomplete = () => {
+          toPut.forEach(([id, v]) => { imageCache.set(id, v); idbPersisted.add(id); });
+          toDelete.forEach((id) => { idbPersisted.delete(id); imageCache.delete(id); });
+          resolve(true);
+        };
+        tx.onerror = tx.onabort = () => resolve(false);
+      });
+    }
+
+    function loadImageEl(src) {
+      return new Promise((resolve, reject) => {
+        const im = new Image();
+        im.onload = () => resolve(im);
+        im.onerror = () => reject(new Error('image load failed'));
+        im.src = src;
+      });
+    }
+
+    async function compressImageDataUrl(dataUrl, maxW = 1000, quality = 0.78, crop = null) {
+      try {
+        if (!isDataUrl(dataUrl) || dataUrl.startsWith('data:image/svg')) return dataUrl;
+        const im = await loadImageEl(dataUrl);
+        const nw = im.naturalWidth || im.width;
+        const nh = im.naturalHeight || im.height;
+        const hasCrop = !!crop && (crop.l || crop.t || crop.r || crop.b);
+        const sx = hasCrop ? Math.round(nw * (crop.l || 0) / 100) : 0;
+        const sy = hasCrop ? Math.round(nh * (crop.t || 0) / 100) : 0;
+        const sw = nw - sx - (hasCrop ? Math.round(nw * (crop.r || 0) / 100) : 0);
+        const sh = nh - sy - (hasCrop ? Math.round(nh * (crop.b || 0) / 100) : 0);
+        if (sw < 20 || sh < 20) return dataUrl;
+        const scale = Math.min(1, maxW / sw);
+        const w = Math.max(1, Math.round(sw * scale));
+        const h = Math.max(1, Math.round(sh * scale));
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(im, sx, sy, sw, sh, 0, 0, w, h);
+        const out = canvas.toDataURL('image/jpeg', quality);
+        return (hasCrop || out.length < dataUrl.length) ? out : dataUrl;
+      } catch (e) {
+        return dataUrl;
+      }
+    }
+
+    function readFileAsDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.onerror = () => reject(new Error('file read failed'));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function escapeXml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function buildFallbackQuestionSvg(qNum, titleText) {
+      const safeTitle = escapeXml(titleText || `Question ${qNum}`);
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="760" height="320" viewBox="0 0 760 320">
+          <rect width="760" height="320" rx="18" fill="#f8fafc" stroke="#cbd5e1" stroke-width="3"/>
+          <rect x="24" y="22" width="64" height="34" rx="8" fill="#2563eb"/>
+          <text x="56" y="45" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#ffffff" text-anchor="middle">Q${qNum}</text>
+          <text x="104" y="45" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#0f172a">${safeTitle}</text>
+          <line x1="24" y1="72" x2="736" y2="72" stroke="#e2e8f0" stroke-width="2"/>
+          <text x="40" y="125" font-family="Arial, sans-serif" font-size="18" fill="#1e293b">A) Option A</text>
+          <text x="40" y="170" font-family="Arial, sans-serif" font-size="18" fill="#1e293b">B) Option B</text>
+          <text x="40" y="215" font-family="Arial, sans-serif" font-size="18" fill="#1e293b">C) Option C</text>
+          <text x="40" y="260" font-family="Arial, sans-serif" font-size="18" fill="#1e293b">D) Option D</text>
+        </svg>`;
+      return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg.trim());
+    }
+
+    function buildMissingImageSvg(qNum, titleText) {
+      const safeTitle = escapeXml(String(titleText || `Question ${qNum}`).slice(0, 90));
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="760" height="200" viewBox="0 0 760 200">
+          <rect width="760" height="200" rx="18" fill="#fffbeb" stroke="#f59e0b" stroke-width="3" stroke-dasharray="8 6"/>
+          <rect x="24" y="22" width="64" height="34" rx="8" fill="#d97706"/>
+          <text x="56" y="45" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#ffffff" text-anchor="middle">Q${qNum}</text>
+          <text x="104" y="45" font-family="Arial, sans-serif" font-size="17" font-weight="bold" fill="#0f172a">${safeTitle}</text>
+          <text x="380" y="125" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#b45309" text-anchor="middle">No image found for this question</text>
+        </svg>`;
+      return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg.trim());
+    }
+
+    function hasRealImage(q) {
+      return !!q && typeof q.image === 'string' && q.image.trim().length > 4;
+    }
+
+    function getSafeImageSrc(q, index = 0) {
+      if (hasRealImage(q)) return q.image.trim();
+      const title = q && q.title ? q.title : `Question ${index + 1}`;
+      if (q && String(q.id || '').startsWith('demo_')) return buildFallbackQuestionSvg(index + 1, title);
+      return buildMissingImageSvg(index + 1, title);
+    }
+
+    const DEFAULT_CONFIG = {
+      examCode: 'MAIN',
+      brandName: 'PHYSICS — MR / OMAR ABD AL HADY',
+      logoUrl: './LOGO_NAME.png',
+      examTitle: 'اختبار الفيزياء — الحركة والقوى',
+      examType: 'Quiz',
+      groups: ['Group A', 'Group B', 'Group C'],
+      examDesc: 'أجب عن الأسئلة المصورة بدقة. يتم حفظ إجابتك تلقائياً بعد كل سؤال ولا يمكن الرجوع للسؤال السابق.',
+      instructions: 'التزم بالوقت المحدد ولا تغادر نافذة الاختبار. اختر الإجابة الصحيحة (Option A, B, C, D) ثم اضغط التالي.',
+      timerMode: 'total',
+      timerValue: 10,
+      formQuotas: {},
+      maxTabSwitches: 2,
+      showResult: true,
+      adminPass: '969696',
+      scriptUrl: 'https://script.google.com/macros/s/AKfycbxoWusKsbKvZB1pvOcssH-8ZzLIsHWUvrmpJFcmy4ZweUNkEKr9j9AtPOULgNtq1i4z3g/exec',
+      waCountryCode: '20',
+      imageCrop: { l: 10, t: 0, r: 0, b: 0 },
+      questions: [
+        {
+          id: 'demo_q1',
+          title: 'سؤال تجريبي 1 — قانون نيوتن الثاني',
+          sourceKey: 'lesson_1',
+          sourceLabel: 'الدرس الأول — القوة والحركة',
+          image: buildFallbackQuestionSvg(1, 'A 5 kg object accelerates at 4 m/s^2. Force?'),
+          correct: 'B',
+          points: 1
+        },
+        {
+          id: 'demo_q2',
+          title: 'سؤال تجريبي 2 — الإزاحة والسرعة',
+          sourceKey: 'lesson_1',
+          sourceLabel: 'الدرس الأول — القوة والحركة',
+          image: buildFallbackQuestionSvg(2, 'Velocity 25 m/s for 6 s. Distance?'),
+          correct: 'B',
+          points: 1
+        },
+        {
+          id: 'demo_q3',
+          title: 'سؤال تجريبي 3 — الشغل والطاقة',
+          sourceKey: 'lesson_2',
+          sourceLabel: 'الدرس الثاني — الشغل والطاقة',
+          image: buildFallbackQuestionSvg(3, 'Work when force is perpendicular to displacement?'),
+          correct: 'C',
+          points: 1
+        }
+      ]
+    };
+
+    let config = loadConfig();
+    let isAdminAuthenticated = false;
+    let fetchedResults = [];
+    let cloudExamsList = [];
+
+    let session = {
+      student: null,
+      questions: [],
+      currentIndex: 0,
+      selectedOption: null,
+      answers: {},
+      startTimeMs: 0,
+      tabSwitches: 0,
+      timerInterval: null,
+      remainingSeconds: 0,
+      isFinished: false
+    };
+
+    function loadConfig() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return structuredClone(DEFAULT_CONFIG);
+        const parsed = JSON.parse(raw);
+        const merged = { ...structuredClone(DEFAULT_CONFIG), ...parsed };
+        merged.logoUrl = DEFAULT_CONFIG.logoUrl;
+        if (!merged.adminPass || merged.adminPass === '1234') merged.adminPass = DEFAULT_CONFIG.adminPass;
+        if (!merged.brandName) merged.brandName = DEFAULT_CONFIG.brandName;
+        if (!merged.scriptUrl && DEFAULT_CONFIG.scriptUrl) merged.scriptUrl = DEFAULT_CONFIG.scriptUrl;
+        return merged;
+      } catch (e) {
+        return structuredClone(DEFAULT_CONFIG);
+      }
+    }
+
+    function saveConfig() {
+      let payload = config;
+      if (idbReady) {
+        payload = {
+          ...config,
+          questions: (config.questions || []).map((q) => (isDataUrl(q.image) ? { ...q, image: '', imageInIDB: true } : q))
+        };
+        idbSyncImages().then((ok) => {
+          if (ok) return;
+          try { localStorage.setItem(STORAGE_KEY, JSON.stringify(config)); }
+          catch (e) { showToast('⚠ تعذر حفظ صور الأسئلة في المتصفح'); }
+        });
+      }
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        return true;
+      } catch (e) {
+        showToast('⚠ مساحة التخزين في المتصفح ممتلئة — لم يتم حفظ التغييرات');
+        return false;
+      }
+    }
+
+    async function initApp() {
+      try {
+        idbReady = await idbLoadAll();
+        if (idbReady) {
+          let legacyImages = false;
+          (config.questions || []).forEach((q) => {
+            const id = String(q.id);
+            if (!hasRealImage(q) && imageCache.has(id)) q.image = imageCache.get(id);
+            else if (isDataUrl(q.image)) legacyImages = true;
+          });
+          if (legacyImages) saveConfig();
+        }
+      } catch (e) {
+        idbReady = false;
+      }
+      applyBrandingToUI();
+
+      // Auto-load exam code if provided in URL ?code=XXXX
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlCode = (urlParams.get('code') || '').trim().toUpperCase();
+      if (urlCode) {
+        document.getElementById('studentExamCodeInput').value = urlCode;
+        if (config.scriptUrl) {
+          await loadExamByCodeForStudent(urlCode, true);
+        }
+      }
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      box.textContent = msg;
+      box.classList.add('show');
+      setTimeout(() => box.classList.remove('show'), 2800);
+    }
+
+    function sanitizeStudentIdInput(inputEl) {
+      let val = inputEl.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (val.length > 0 && !/[A-Z]/.test(val[0])) {
+        val = val.replace(/^[0-9]+/, '');
+      }
+      if (val.length > 0) {
+        const firstChar = val[0];
+        const restDigits = val.slice(1).replace(/[^0-9]/g, '');
+        val = firstChar + restDigits;
+      }
+      inputEl.value = val;
+    }
+
+    function populateStudentGroupDropdown() {
+      const selectEl = document.getElementById('stuGroup');
+      const currentVal = selectEl.value;
+      const groups = Array.isArray(config.groups) && config.groups.length
+        ? config.groups
+        : DEFAULT_CONFIG.groups;
+
+      selectEl.innerHTML = '<option value="" disabled selected>اختر المجموعة...</option>';
+      groups.forEach((grp) => {
+        const opt = document.createElement('option');
+        opt.value = grp;
+        opt.textContent = grp;
+        selectEl.appendChild(opt);
+      });
+
+      if (groups.includes(currentVal)) {
+        selectEl.value = currentVal;
+      }
+    }
+
+    function getGroupedSources() {
+      const map = new Map();
+      (config.questions || []).forEach((q) => {
+        const key = q.sourceKey || 'default_bank';
+        const label = q.sourceLabel || 'بنك الأسئلة العام';
+        if (!map.has(key)) {
+          map.set(key, { key, label, questions: [] });
+        }
+        map.get(key).questions.push(q);
+      });
+      return Array.from(map.values());
+    }
+
+    function buildDistributedExamQuestions() {
+      const groups = getGroupedSources();
+      const quotas = config.formQuotas || {};
+      const selected = [];
+
+      groups.forEach((grp) => {
+        const pool = shuffleArray(grp.questions);
+        const rawQuota = Number(quotas[grp.key] ?? 0);
+        const takeCount = rawQuota > 0 ? Math.min(rawQuota, pool.length) : pool.length;
+        selected.push(...pool.slice(0, takeCount));
+      });
+
+      return shuffleArray(selected);
+    }
+
+    function getEffectiveExamQuestionCount() {
+      return buildDistributedExamQuestions().length;
+    }
+
+    function switchScreen(screenId) {
+      if (screenId === 'adminScreen' && !isAdminAuthenticated) {
+        openAdminGate();
+        return;
+      }
+      document.querySelectorAll('.screen').forEach((sec) => sec.classList.remove('active'));
+      const target = document.getElementById(screenId);
+      if (target) target.classList.add('active');
+      const mainEl = document.getElementById('mainContainer');
+      if (screenId === 'adminScreen') mainEl.classList.add('wide');
+      else mainEl.classList.remove('wide');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function applyBrandingToUI() {
+      const effectiveQCount = getEffectiveExamQuestionCount();
+      const activeLogo = DEFAULT_CONFIG.logoUrl;
+      document.getElementById('topLogo').src = activeLogo;
+      document.getElementById('welcomeLogo').src = activeLogo;
+      document.getElementById('topBrandName').textContent = config.brandName || DEFAULT_CONFIG.brandName;
+      document.getElementById('metaExamCode').textContent = config.examCode || 'MAIN';
+      if (!document.getElementById('studentExamCodeInput').value && config.examCode && config.examCode !== 'MAIN') {
+        document.getElementById('studentExamCodeInput').value = config.examCode;
+      }
+
+      const badge = document.getElementById('topExamTypeBadge');
+      const pill = document.getElementById('welcomeExamTypePill');
+      if (config.examType === 'Comprehensive') {
+        badge.textContent = 'امتحان شامل';
+        pill.textContent = 'امتحان شامل (Comprehensive Exam)';
+        pill.classList.add('comprehensive');
+      } else {
+        badge.textContent = 'Quiz';
+        pill.textContent = 'اختبار قصير (Quiz)';
+        pill.classList.remove('comprehensive');
+      }
+
+      document.getElementById('welcomeExamTitle').textContent = config.examTitle;
+      document.getElementById('welcomeExamDesc').textContent = config.examDesc;
+      document.getElementById('customInstructionsText').textContent = config.instructions;
+      document.getElementById('metaQuestionsCount').textContent = `${effectiveQCount} سؤال`;
+      document.getElementById('metaTimerMode').textContent = config.timerMode === 'per_question'
+        ? `${config.timerValue} ثانية / سؤال`
+        : `${config.timerValue} دقيقة كلي`;
+
+      populateStudentGroupDropdown();
+    }
+
+    /* ---------------- Multi-exam & Exam Code ---------------- */
+
+    function buildFullExamPayload(code) {
+      const questionsWithImages = (config.questions || []).map((q, idx) => ({
+        ...q,
+        image: getSafeImageSrc(q, idx)
+      }));
+      return {
+        examCode: code,
+        brandName: config.brandName || DEFAULT_CONFIG.brandName,
+        logoUrl: DEFAULT_CONFIG.logoUrl,
+        examTitle: config.examTitle,
+        examType: config.examType,
+        groups: config.groups,
+        examDesc: config.examDesc,
+        instructions: config.instructions,
+        timerMode: config.timerMode,
+        timerValue: config.timerValue,
+        formQuotas: config.formQuotas,
+        maxTabSwitches: config.maxTabSwitches,
+        showResult: config.showResult,
+        waCountryCode: config.waCountryCode,
+        imageCrop: config.imageCrop,
+        questions: questionsWithImages
+      };
+    }
+
+    function applyFetchedExamBundle(bundle) {
+      if (!bundle || typeof bundle !== 'object') return;
+      const keepScriptUrl = config.scriptUrl || bundle.scriptUrl || DEFAULT_CONFIG.scriptUrl || '';
+      const keepAdminPass = config.adminPass || DEFAULT_CONFIG.adminPass;
+      const resolvedLogo = DEFAULT_CONFIG.logoUrl;
+      const resolvedBrand = bundle.brandName || config.brandName || DEFAULT_CONFIG.brandName;
+      config = {
+        ...structuredClone(DEFAULT_CONFIG),
+        ...bundle,
+        brandName: resolvedBrand,
+        logoUrl: resolvedLogo,
+        scriptUrl: keepScriptUrl,
+        adminPass: keepAdminPass,
+        questions: Array.isArray(bundle.questions) ? bundle.questions : []
+      };
+      saveConfig();
+      applyBrandingToUI();
+      if (isAdminAuthenticated) {
+        populateAdminInputs();
+      }
+    }
+
+    async function loadExamByCodeForStudent(overrideCode = null, silent = false) {
+      const rawCode = overrideCode !== null
+        ? String(overrideCode).trim().toUpperCase()
+        : document.getElementById('studentExamCodeInput').value.trim().toUpperCase();
+
+      if (!rawCode) {
+        if (!silent) showToast('يرجى إدخال كود الامتحان أولاً');
+        return false;
+      }
+      if (!config.scriptUrl) {
+        if (!silent) showToast('رابط Google Apps Script غير مضبوط في الإعدادات');
+        return false;
+      }
+
+      const btn = document.getElementById('btnLoadExamByCode');
+      if (btn) btn.disabled = true;
+      if (!silent) showToast('جاري تحميل الامتحان...');
+
+      try {
+        const res = await fetch(`${config.scriptUrl}?action=getExam&code=${encodeURIComponent(rawCode)}`);
+        const data = await res.json();
+        if (!data.success || !data.exam) {
+          if (!silent) showToast(data.error || 'كود الامتحان غير صحيح');
+          return false;
+        }
+        applyFetchedExamBundle(data.exam);
+        document.getElementById('studentExamCodeInput').value = rawCode;
+        if (!silent) showToast(`تم تحميل امتحان "${data.exam.examTitle || rawCode}" ✓`);
+        return true;
+      } catch (e) {
+        if (!silent) showToast('تعذر الاتصال بجلب الامتحان');
+        return false;
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    async function saveCurrentExamToSheet() {
+      const code = document.getElementById('adminExamCodeInput').value.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '');
+      if (!code) {
+        showToast('يرجى كتابة كود صالح للامتحان (حروف إنجليزية وأرقام)');
+        return;
+      }
+      if (!config.scriptUrl) {
+        showToast('أدخل رابط Google Apps Script في تبويب الإعدادات أولاً');
+        return;
+      }
+
+      config.examCode = code;
+      saveConfig();
+      applyBrandingToUI();
+
+      const btn = document.getElementById('btnSaveExamToCloud');
+      btn.disabled = true;
+      showToast('جاري حفظ ونشر الامتحان على Google Sheet...');
+
+      try {
+        const payload = {
+          action: 'saveExam',
+          examCode: code,
+          exam: buildFullExamPayload(code)
+        };
+        await fetch(config.scriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+
+        const shareUrl = `${window.location.origin}${window.location.pathname}?code=${encodeURIComponent(code)}`;
+        document.getElementById('examShareLinkBox').innerHTML = `
+          تم إرسال الحفظ للكود <strong>${escapeXml(code)}</strong> ✓<br>
+          رابط مباشر للطلاب بهذا الكود: <span style="user-select:all; direction:ltr; display:inline-block;">${escapeXml(shareUrl)}</span>
+        `;
+        showToast(`تم حفظ الامتحان بالكود ${code} ✓`);
+        setTimeout(refreshExamsListFromSheet, 1200);
+      } catch (e) {
+        showToast('حدث خطأ أثناء حفظ الامتحان');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function refreshExamsListFromSheet() {
+      if (!config.scriptUrl) {
+        showToast('أدخل رابط Google Apps Script في الإعدادات أولاً');
+        return;
+      }
+      try {
+        const res = await fetch(`${config.scriptUrl}?action=listExams`);
+        const data = await res.json();
+        if (data.success && Array.isArray(data.exams)) {
+          cloudExamsList = data.exams;
+          renderCloudExamsList();
+        }
+      } catch (e) {
+        showToast('تعذر جلب قائمة الامتحانات');
+      }
+    }
+
+    function renderCloudExamsList() {
+      const box = document.getElementById('cloudExamsList');
+      if (!cloudExamsList.length) {
+        box.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">لا توجد امتحانات محفوظة على الشيت بعد.</p>';
+        return;
+      }
+      box.innerHTML = cloudExamsList.map((ex) => {
+        const shareUrl = `${window.location.origin}${window.location.pathname}?code=${encodeURIComponent(ex.examCode)}`;
+        return `
+          <div class="q-bank-item">
+            <div>
+              <strong style="direction:ltr; display:inline-block;">${escapeXml(ex.examCode)}</strong>
+              — <strong>${escapeXml(ex.examTitle)}</strong>
+              <span class="badge-topic">${escapeXml(ex.examType)}</span>
+              <span class="badge-topic">${Number(ex.questionsCount || 0)} سؤال</span>
+              <div style="font-size:0.78rem; color:var(--text-muted); margin-top:3px; user-select:all; direction:ltr;">${escapeXml(shareUrl)}</div>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm" onclick="loadCloudExamIntoAdmin('${escapeXml(ex.examCode)}')">تحميل للتعديل</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteCloudExam('${escapeXml(ex.examCode)}')">حذف</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function loadCloudExamIntoAdmin(code) {
+      const ok = await loadExamByCodeForStudent(code, false);
+      if (ok) {
+        document.getElementById('adminExamCodeInput').value = code;
+        populateAdminInputs();
+        showToast(`تم تحميل الامتحان ${code} في لوحة المعلم`);
+      }
+    }
+
+    async function deleteCloudExam(code) {
+      if (!config.scriptUrl) return;
+      try {
+        await fetch(config.scriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'deleteExam', examCode: code })
+        });
+        showToast(`تم طلب حذف الامتحان ${code}`);
+        setTimeout(refreshExamsListFromSheet, 1000);
+      } catch (e) {
+        showToast('تعذر حذف الامتحان');
+      }
+    }
+
+    function createNewBlankExam() {
+      const keepScript = config.scriptUrl;
+      const keepPass = config.adminPass;
+      const keepBrand = config.brandName || DEFAULT_CONFIG.brandName;
+      const keepLogo = DEFAULT_CONFIG.logoUrl;
+      const keepGroups = config.groups;
+      config = {
+        ...structuredClone(DEFAULT_CONFIG),
+        examCode: '',
+        examTitle: 'امتحان جديد',
+        questions: [],
+        formQuotas: {},
+        scriptUrl: keepScript,
+        adminPass: keepPass,
+        brandName: keepBrand,
+        logoUrl: keepLogo,
+        groups: keepGroups
+      };
+      saveConfig();
+      applyBrandingToUI();
+      populateAdminInputs();
+      document.getElementById('adminExamCodeInput').value = '';
+      document.getElementById('examShareLinkBox').textContent = '';
+      showToast('تم تجهيز امتحان جديد فارغ — أضف الأسئلة ثم احفظه بكود');
+    }
+
+    /* ---------------- Student registration & exam session ---------------- */
+
+    async function handleStudentRegister(e) {
+      e.preventDefault();
+      const typedCode = document.getElementById('studentExamCodeInput').value.trim().toUpperCase();
+      if (typedCode && typedCode !== (config.examCode || '').toUpperCase() && config.scriptUrl) {
+        const loaded = await loadExamByCodeForStudent(typedCode, false);
+        if (!loaded) return;
+      }
+
+      const name = document.getElementById('stuName').value.trim();
+      const idInput = document.getElementById('stuId');
+      sanitizeStudentIdInput(idInput);
+      const id = idInput.value.trim();
+      const group = document.getElementById('stuGroup').value;
+      const phone = document.getElementById('stuPhone').value.trim();
+
+      if (!name || !id || !group || !phone) {
+        showToast('يرجى استكمال جميع البيانات المطلوبة');
+        return;
+      }
+      if (!STRICT_ID_REGEX.test(id)) {
+        showToast('صيغة الكود غير صحيحة — مثال: T173');
+        idInput.focus();
+        return;
+      }
+      const pool = buildDistributedExamQuestions();
+      if (!pool.length) {
+        showToast('لا توجد أسئلة متاحة في الامتحان حالياً');
+        return;
+      }
+
+      session.student = { name, id, group, phone };
+      document.getElementById('agreeRulesCheckbox').checked = false;
+      toggleStartExamBtn();
+      switchScreen('instructionsScreen');
+    }
+
+    function toggleStartExamBtn() {
+      document.getElementById('btnStartExam').disabled = !document.getElementById('agreeRulesCheckbox').checked;
+    }
+
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function startExamSession() {
+      const pool = buildDistributedExamQuestions();
+      if (!pool.length) {
+        showToast('لا توجد أسئلة موزعة للامتحان');
+        return;
+      }
+
+      session.questions = pool;
+      session.currentIndex = 0;
+      session.selectedOption = null;
+      session.answers = {};
+      session.startTimeMs = Date.now();
+      session.tabSwitches = 0;
+      session.isFinished = false;
+
+      history.pushState(null, '', location.href);
+      window.onpopstate = function () {
+        if (!session.isFinished && document.getElementById('examScreen').classList.contains('active')) {
+          history.pushState(null, '', location.href);
+          showToast('غير مسموح بالرجوع للخلف أثناء الامتحان');
+        }
+      };
+
+      document.body.classList.add('protected-mode');
+      switchScreen('examScreen');
+      renderCurrentQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      clearInterval(session.timerInterval);
+      session.remainingSeconds = config.timerMode === 'per_question'
+        ? Number(config.timerValue || 60)
+        : Number(config.timerValue || 10) * 60;
+
+      updateTimerUI();
+
+      session.timerInterval = setInterval(() => {
+        session.remainingSeconds--;
+        updateTimerUI();
+
+        if (session.remainingSeconds <= 0) {
+          if (config.timerMode === 'per_question') {
+            showToast('انتهى وقت السؤال — جاري الانتقال للتالي');
+            handleNextQuestion(true);
+          } else {
+            showToast('انتهى وقت الامتحان — جاري التسليم التلقائي');
+            finishExam('Time Expired');
+          }
+        }
+      }, 1000);
+    }
+
+    function updateTimerUI() {
+      const sec = Math.max(0, session.remainingSeconds);
+      const mins = Math.floor(sec / 60);
+      const remSec = sec % 60;
+      const el = document.getElementById('timerDisplay');
+      el.textContent = `⏱️ ${String(mins).padStart(2, '0')}:${String(remSec).padStart(2, '0')}`;
+      el.classList.toggle('danger', sec <= 60);
+    }
+
+    function renderCurrentQuestion() {
+      const idx = session.currentIndex;
+      const total = session.questions.length;
+      const q = session.questions[idx];
+
+      session.selectedOption = null;
+      session.questionStartMs = Date.now();
+      document.getElementById('qCounterLabel').textContent = `السؤال ${idx + 1} من ${total}`;
+      document.getElementById('qPointsPill').textContent = `درجة السؤال: ${q.points || 1}`;
+      document.getElementById('qTopicBadge').textContent = q.sourceLabel || '';
+      document.getElementById('examProgressBar').style.width = `${((idx + 1) / total) * 100}%`;
+
+      const safeSrc = getSafeImageSrc(q, idx);
+      const imgEl = document.getElementById('currentQuestionImg');
+      imgEl.src = safeSrc;
+      document.getElementById('zoomModalImg').src = safeSrc;
+
+      document.querySelectorAll('#choicesGrid .choice-btn').forEach((btn) => btn.classList.remove('selected'));
+      document.getElementById('autoSaveStatus').textContent = '';
+      document.getElementById('btnNextQuestion').textContent = idx === total - 1 ? 'إنهاء وتسليم الامتحان ✓' : 'السؤال التالي ←';
+
+      const card = document.getElementById('questionCard');
+      card.classList.remove('question-animate');
+      void card.offsetWidth;
+      card.classList.add('question-animate');
+
+      if (config.timerMode === 'per_question') {
+        session.remainingSeconds = Number(config.timerValue || 60);
+        updateTimerUI();
+      }
+    }
+
+    function selectAnswer(opt) {
+      if (session.isFinished) return;
+      session.selectedOption = opt;
+      document.querySelectorAll('#choicesGrid .choice-btn').forEach((btn) => {
+        btn.classList.toggle('selected', btn.dataset.opt === opt);
+      });
+    }
+
+    function handleNextQuestion(isAutoAdvance = false) {
+      if (session.isFinished) return;
+      const q = session.questions[session.currentIndex];
+      const chosen = session.selectedOption || (isAutoAdvance ? 'NO_ANSWER' : null);
+
+      if (!chosen) {
+        showToast('Please select Option A, B, C, or D before continuing');
+        return;
+      }
+
+      const isCorrect = chosen === q.correct;
+      const earnedPoints = isCorrect ? Number(q.points || 1) : 0;
+      const timeSpentSec = Math.max(0, Math.round((Date.now() - (session.questionStartMs || Date.now())) / 1000));
+
+      session.answers[q.id] = {
+        questionId: q.id,
+        questionNumber: session.currentIndex + 1,
+        questionTitle: q.title || `Q${session.currentIndex + 1}`,
+        sourceLabel: q.sourceLabel || '',
+        selected: chosen,
+        correct: q.correct,
+        isCorrect: isCorrect,
+        points: earnedPoints,
+        maxPoints: Number(q.points || 1),
+        timeSpentSec
+      };
+
+      document.getElementById('autoSaveStatus').textContent = `✓ Saved Option ${chosen} automatically`;
+
+      // Send lightweight step log every 3 questions or on final question to reduce concurrent Apps Script lock load
+      if (session.currentIndex === session.questions.length - 1 || (session.currentIndex + 1) % 3 === 0) {
+        sendPayloadToSheet('saveStep', false, {
+          index: session.currentIndex + 1,
+          questionId: q.id,
+          selected: chosen,
+          correct: q.correct,
+          isCorrect: isCorrect,
+          number: session.currentIndex + 1,
+          sourceLabel: q.sourceLabel || '',
+          points: earnedPoints,
+          timeSpentSec
+        });
+      }
+
+      if (session.currentIndex < session.questions.length - 1) {
+        session.currentIndex++;
+        renderCurrentQuestion();
+      } else {
+        finishExam('Completed');
+      }
+    }
+
+    function calculateTotalScore() {
+      return Object.values(session.answers).reduce((sum, item) => sum + Number(item.points || 0), 0);
+    }
+
+    function calculateMaxScore() {
+      return session.questions.reduce((sum, q) => sum + Number(q.points || 1), 0);
+    }
+
+    function finishExam(statusReason = 'Completed') {
+      if (session.isFinished) return;
+      session.isFinished = true;
+      clearInterval(session.timerInterval);
+      document.body.classList.remove('protected-mode');
+      window.onpopstate = null;
+
+      const score = calculateTotalScore();
+      const maxScore = calculateMaxScore();
+      const pct = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
+      const timeTakenSec = Math.round((Date.now() - session.startTimeMs) / 1000);
+
+      sendPayloadToSheet('submitExam', true, null, score, maxScore, timeTakenSec, statusReason);
+
+      document.getElementById('resultStudentTitle').textContent = `أحسنت يا ${session.student.name} (${session.student.id})`;
+      document.getElementById('resultStatusMsg').textContent = statusReason === 'Cheating Auto-Submit'
+        ? 'تم إنهاء الامتحان تلقائياً لتجاوز حد الخروج من الصفحة.'
+        : 'تم إرسال وتسجيل إجاباتك ودرجتك بنجاح.';
+
+      const scoreArea = document.getElementById('scoreDisplayArea');
+      const reviewCard = document.getElementById('detailedReviewCard');
+
+      if (config.showResult) {
+        scoreArea.innerHTML = `
+          <div class="meta-strip">
+            <div class="meta-box"><div class="label">الدرجة</div><div class="val" style="color: var(--primary); font-size: 1.4rem;">${score} / ${maxScore}</div></div>
+            <div class="meta-box"><div class="label">النسبة المئوية</div><div class="val" style="font-size: 1.4rem;">${pct}%</div></div>
+            <div class="meta-box"><div class="label">الزمن المستغرق</div><div class="val">${timeTakenSec} ثانية</div></div>
+          </div>
+        `;
+        renderStudentReview();
+        reviewCard.style.display = 'block';
+      } else {
+        scoreArea.innerHTML = `<p style="font-weight: 700; color: var(--text-muted);">سيتم إعلان النتيجة الرسمية من قِبل المعلم قريباً.</p>`;
+        reviewCard.style.display = 'none';
+      }
+
+      switchScreen('resultScreen');
+    }
+
+    function renderStudentReview() {
+      const container = document.getElementById('reviewItemsContainer');
+      container.innerHTML = '';
+      session.questions.forEach((q, i) => {
+        const ans = session.answers[q.id] || { selected: 'لم يُجب', correct: q.correct, isCorrect: false };
+        const div = document.createElement('div');
+        div.className = 'q-bank-item';
+        div.innerHTML = `
+          <div style="display:flex; align-items:center; gap:12px;">
+            <img src="${getSafeImageSrc(q, i)}" alt="Q${i + 1}" />
+            <div>
+              <strong>Question ${i + 1}</strong> <span class="badge-topic">${escapeXml(q.sourceLabel || '')}</span>
+              <div style="font-size:0.88rem; margin-top:3px;">
+                Your Answer: <strong>${ans.selected}</strong> | Correct Answer: <strong>${q.correct}</strong>
+              </div>
+            </div>
+          </div>
+          <span class="${ans.isCorrect ? 'badge-pass' : 'badge-fail'}">${ans.isCorrect ? 'Correct ✓' : 'Wrong ✕'}</span>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function sendPayloadToSheet(action, isFinal, questionLog = null, scoreOverride = null, maxScoreOverride = null, timeTakenOverride = null, statusOverride = null) {
+      if (!config.scriptUrl) return;
+      const score = scoreOverride !== null ? scoreOverride : calculateTotalScore();
+      const totalQuestions = maxScoreOverride !== null ? maxScoreOverride : calculateMaxScore();
+      const timeTakenSec = timeTakenOverride !== null ? timeTakenOverride : Math.round((Date.now() - session.startTimeMs) / 1000);
+
+      const body = {
+        action,
+        examCode: config.examCode || '',
+        examTitle: config.examTitle,
+        student: session.student,
+        questionLog,
+        answers: isFinal ? session.answers : undefined,
+        questionOrder: isFinal ? session.questions.map((q) => q.id) : undefined,
+        score,
+        totalQuestions,
+        timeTakenSec,
+        tabSwitches: session.tabSwitches,
+        status: statusOverride || (isFinal ? 'Completed' : 'In Progress')
+      };
+
+      fetch(config.scriptUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(body)
+      }).catch(() => {});
+    }
+
+    function resetForNewStudent() {
+      document.getElementById('studentRegForm').reset();
+      populateStudentGroupDropdown();
+      switchScreen('welcomeScreen');
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && !session.isFinished && document.getElementById('examScreen').classList.contains('active')) {
+        session.tabSwitches++;
+        const limit = Number(config.maxTabSwitches || 2);
+        if (session.tabSwitches >= limit) {
+          finishExam('Cheating Auto-Submit');
+        } else {
+          showToast(`تحذير! تم رصد خروج من نافذة الاختبار (${session.tabSwitches}/${limit})`);
+        }
+      }
+    });
+
+    function openZoomModal() {
+      const src = document.getElementById('currentQuestionImg').src;
+      if (!src) return;
+      document.getElementById('zoomModalImg').src = src;
+      document.getElementById('zoomModal').classList.add('open');
+    }
+
+    function closeZoomModal(e) {
+      if (!e || e.target.id === 'zoomModal') document.getElementById('zoomModal').classList.remove('open');
+    }
+
+    function openAdminGate() {
+      if (isAdminAuthenticated) {
+        populateAdminInputs();
+        switchScreen('adminScreen');
+        return;
+      }
+      document.getElementById('adminPassInput').value = '';
+      document.getElementById('adminAuthModal').classList.add('open');
+    }
+
+    function closeAdminAuthModal(e) {
+      if (!e || e.target.id === 'adminAuthModal') document.getElementById('adminAuthModal').classList.remove('open');
+    }
+
+    function verifyAdminPass() {
+      if (document.getElementById('adminPassInput').value === config.adminPass) {
+        isAdminAuthenticated = true;
+        document.getElementById('adminAuthModal').classList.remove('open');
+        populateAdminInputs();
+        switchScreen('adminScreen');
+        if (config.scriptUrl) refreshExamsListFromSheet();
+      } else {
+        showToast('كلمة المرور غير صحيحة');
+      }
+    }
+
+    function logoutAdmin() {
+      isAdminAuthenticated = false;
+      switchScreen('welcomeScreen');
+    }
+
+    function switchAdminTab(tabId) {
+      document.querySelectorAll('.admin-tab').forEach((t) => (t.style.display = 'none'));
+      document.getElementById(tabId).style.display = 'block';
+      document.querySelectorAll('.tab-btn').forEach((b) => b.classList.toggle('active', b.dataset.tab === tabId));
+      if (tabId === 'tabQuestions') {
+        renderFormQuotasUI();
+        renderQuestionBank();
+      } else if (tabId === 'tabExams' && config.scriptUrl) {
+        refreshExamsListFromSheet();
+      }
+    }
+
+    function populateAdminInputs() {
+      document.getElementById('adminExamCodeInput').value = config.examCode || '';
+      document.getElementById('cfgBrandName').value = config.brandName || DEFAULT_CONFIG.brandName;
+      document.getElementById('cfgLogoUrl').value = config.logoUrl || DEFAULT_CONFIG.logoUrl;
+      document.getElementById('cfgExamTitle').value = config.examTitle;
+      document.getElementById('cfgExamType').value = config.examType;
+      document.getElementById('cfgGroupsList').value = (config.groups || DEFAULT_CONFIG.groups).join(', ');
+      document.getElementById('cfgExamDesc').value = config.examDesc;
+      document.getElementById('cfgInstructions').value = config.instructions;
+      document.getElementById('cfgTimerMode').value = config.timerMode;
+      document.getElementById('cfgTimerValue').value = config.timerValue;
+      document.getElementById('cfgMaxTabSwitches').value = config.maxTabSwitches;
+      document.getElementById('cfgShowResult').value = String(config.showResult);
+      document.getElementById('cfgAdminPass').value = config.adminPass;
+      document.getElementById('cfgScriptUrl').value = config.scriptUrl;
+      document.getElementById('cfgWaCountry').value = config.waCountryCode || '20';
+      const ic = config.imageCrop || { l: 10, t: 0, r: 0, b: 0 };
+      document.getElementById('impCropL').value = ic.l || 0;
+      document.getElementById('impCropT').value = ic.t || 0;
+      document.getElementById('impCropR').value = ic.r || 0;
+      document.getElementById('impCropB').value = ic.b || 0;
+      renderFormQuotasUI();
+      renderQuestionBank();
+    }
+
+    function saveAdminSettings() {
+      const parsedGroups = document.getElementById('cfgGroupsList').value.split(',').map((g) => g.trim()).filter(Boolean);
+      const typedCode = document.getElementById('adminExamCodeInput').value.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '');
+      if (typedCode) config.examCode = typedCode;
+      config.brandName = document.getElementById('cfgBrandName').value.trim() || DEFAULT_CONFIG.brandName;
+      config.logoUrl = DEFAULT_CONFIG.logoUrl;
+      config.examTitle = document.getElementById('cfgExamTitle').value.trim() || DEFAULT_CONFIG.examTitle;
+      config.examType = document.getElementById('cfgExamType').value;
+      config.groups = parsedGroups.length ? parsedGroups : DEFAULT_CONFIG.groups;
+      config.examDesc = document.getElementById('cfgExamDesc').value.trim();
+      config.instructions = document.getElementById('cfgInstructions').value.trim();
+      config.timerMode = document.getElementById('cfgTimerMode').value;
+      config.timerValue = Number(document.getElementById('cfgTimerValue').value || 10);
+      config.maxTabSwitches = Number(document.getElementById('cfgMaxTabSwitches').value || 2);
+      config.showResult = document.getElementById('cfgShowResult').value === 'true';
+      config.adminPass = document.getElementById('cfgAdminPass').value.trim() || DEFAULT_CONFIG.adminPass;
+      config.scriptUrl = document.getElementById('cfgScriptUrl').value.trim();
+      config.waCountryCode = (document.getElementById('cfgWaCountry').value || '20').replace(/\D/g, '') || '20';
+
+      saveConfig();
+      applyBrandingToUI();
+      showToast('تم حفظ الإعدادات وتحديث المجموعات والواجهة ✓');
+    }
+
+    function renderFormQuotasUI() {
+      const container = document.getElementById('formQuotasContainer');
+      const groups = getGroupedSources();
+      config.formQuotas = config.formQuotas || {};
+
+      if (!groups.length) {
+        container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">لا توجد فورمات أو دروس في البنك حالياً.</p>';
+        document.getElementById('totalDistributedCountPill').textContent = 'إجمالي أسئلة الامتحان: 0';
+        return;
+      }
+
+      container.innerHTML = groups.map((grp) => {
+        const currentQuota = Number(config.formQuotas[grp.key] ?? 0);
+        return `
+          <div class="form-quota-item">
+            <div>
+              <strong>${escapeXml(grp.label)}</strong>
+              <span class="badge-topic" style="margin-right: 6px;">متاح: ${grp.questions.length} سؤال</span>
+            </div>
+            <div class="quota-input-wrap">
+              <label style="font-size: 0.85rem; font-weight: 700;">عدد الأسئلة:</label>
+              <input type="number" min="0" max="${grp.questions.length}" data-quota-key="${grp.key}" value="${currentQuota}" oninput="updateDistributedPillPreview()" />
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      updateDistributedPillPreview();
+    }
+
+    function updateDistributedPillPreview() {
+      const groups = getGroupedSources();
+      let total = 0;
+      groups.forEach((grp) => {
+        const input = document.querySelector(`input[data-quota-key="${grp.key}"]`);
+        const val = input ? Math.max(0, Number(input.value || 0)) : Number(config.formQuotas?.[grp.key] ?? 0);
+        total += val > 0 ? Math.min(val, grp.questions.length) : grp.questions.length;
+      });
+      document.getElementById('totalDistributedCountPill').textContent = `إجمالي أسئلة الامتحان: ${total}`;
+    }
+
+    function saveFormQuotas() {
+      const groups = getGroupedSources();
+      const nextQuotas = { ...(config.formQuotas || {}) };
+      groups.forEach((grp) => {
+        const input = document.querySelector(`input[data-quota-key="${grp.key}"]`);
+        if (input) {
+          const val = Math.max(0, Math.min(Number(input.value || 0), grp.questions.length));
+          input.value = val;
+          nextQuotas[grp.key] = val;
+        }
+      });
+      config.formQuotas = nextQuotas;
+      saveConfig();
+      applyBrandingToUI();
+      updateDistributedPillPreview();
+      showToast('تم حفظ توزيع الأسئلة على الفورمات/الدروس ✓');
+    }
+
+    async function handleQuestionFileUpload(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      try {
+        const raw = await readFileAsDataUrl(file);
+        document.getElementById('newQImgUrl').value = await compressImageDataUrl(raw);
+      } catch (e) {
+        showToast('تعذر قراءة ملف الصورة');
+      }
+    }
+
+    async function replaceQuestionImage(idx, inputEl) {
+      const file = inputEl.files && inputEl.files[0];
+      if (!file || !config.questions[idx]) return;
+      try {
+        const raw = await readFileAsDataUrl(file);
+        config.questions[idx].image = await compressImageDataUrl(raw);
+        config.questions[idx].hasImage = true;
+        saveConfig();
+        renderQuestionBank();
+        showToast('تم تحديث صورة السؤال ✓');
+      } catch (e) {
+        showToast('تعذر قراءة ملف الصورة');
+      }
+    }
+
+    let cropState = { idx: -1, img: null };
+
+    function readCropInputs() {
+      const g = (id) => Math.min(45, Math.max(0, Number(document.getElementById(id).value) || 0));
+      return { l: g('cropL'), t: g('cropT'), r: g('cropR'), b: g('cropB') };
+    }
+
+    function readImportCrop() {
+      const g = (id) => Math.min(45, Math.max(0, Number(document.getElementById(id).value) || 0));
+      return { l: g('impCropL'), t: g('impCropT'), r: g('impCropR'), b: g('impCropB') };
+    }
+
+    async function openCropModal(idx) {
+      const q = config.questions[idx];
+      if (!q || !isDataUrl(q.image)) {
+        showToast('القص متاح للصور المحفوظة داخل البرنامج فقط');
+        return;
+      }
+      try {
+        cropState.img = await loadImageEl(q.image);
+      } catch (e) {
+        showToast('تعذر فتح الصورة');
+        return;
+      }
+      cropState.idx = idx;
+      const c = config.imageCrop || { l: 10, t: 0, r: 0, b: 0 };
+      document.getElementById('cropL').value = c.l || 0;
+      document.getElementById('cropT').value = c.t || 0;
+      document.getElementById('cropR').value = c.r || 0;
+      document.getElementById('cropB').value = c.b || 0;
+      document.getElementById('cropAllLesson').checked = true;
+      updateCropPreview();
+      document.getElementById('cropModal').classList.add('open');
+    }
+
+    function closeCropModal() {
+      document.getElementById('cropModal').classList.remove('open');
+      cropState = { idx: -1, img: null };
+    }
+
+    function updateCropPreview() {
+      const im = cropState.img;
+      if (!im) return;
+      const c = readCropInputs();
+      document.getElementById('cropLVal').textContent = c.l + '%';
+      document.getElementById('cropRVal').textContent = c.r + '%';
+      document.getElementById('cropTVal').textContent = c.t + '%';
+      document.getElementById('cropBVal').textContent = c.b + '%';
+
+      const W = Math.min(820, im.naturalWidth || im.width);
+      const H = Math.round(W * (im.naturalHeight || im.height) / (im.naturalWidth || im.width));
+      const cv = document.getElementById('cropCanvas');
+      cv.width = W;
+      cv.height = H;
+      const ctx = cv.getContext('2d');
+      ctx.drawImage(im, 0, 0, W, H);
+      const x0 = W * c.l / 100, x1 = W * (1 - c.r / 100), y0 = H * c.t / 100, y1 = H * (1 - c.b / 100);
+      ctx.fillStyle = 'rgba(220, 38, 38, 0.45)';
+      ctx.fillRect(0, 0, x0, H);
+      ctx.fillRect(x1, 0, W - x1, H);
+      ctx.fillRect(x0, 0, x1 - x0, y0);
+      ctx.fillRect(x0, y1, x1 - x0, H - y1);
+    }
+
+    async function applyCrop() {
+      const base = config.questions[cropState.idx];
+      if (!base) return;
+      const c = readCropInputs();
+      if (!(c.l || c.t || c.r || c.b)) {
+        showToast('حدد مقدار القص أولاً');
+        return;
+      }
+      const all = document.getElementById('cropAllLesson').checked;
+      const targets = config.questions.filter((q) => (all ? q.sourceKey === base.sourceKey : q === base) && isDataUrl(q.image));
+      const btn = document.getElementById('btnApplyCrop');
+      btn.disabled = true;
+      try {
+        for (const q of targets) q.image = await compressImageDataUrl(q.image, 1000, 0.82, c);
+        config.imageCrop = c;
+        saveConfig();
+        renderQuestionBank();
+        closeCropModal();
+        showToast(`تم قص ${targets.length} صورة ✓`);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function setQuestionCorrect(idx, val) {
+      if (!config.questions[idx]) return;
+      config.questions[idx].correct = val;
+      saveConfig();
+      renderQuestionBank();
+    }
+
+    function openZoomSrc(src) {
+      if (!src) return;
+      document.getElementById('zoomModalImg').src = src;
+      document.getElementById('zoomModal').classList.add('open');
+    }
+
+    function addManualQuestion() {
+      const img = document.getElementById('newQImgUrl').value.trim();
+      const correct = document.getElementById('newQCorrect').value;
+      const points = Number(document.getElementById('newQPoints').value || 1);
+      const lessonLabel = document.getElementById('newQLesson').value.trim() || 'أسئلة عامة';
+      const lessonKey = 'lesson_' + lessonLabel.toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]+/g, '_');
+
+      if (!img) {
+        showToast('يرجى رفع صورة السؤال أو إدخال رابطها');
+        return;
+      }
+
+      config.questions.push({
+        id: 'q_' + Date.now(),
+        title: `سؤال ${config.questions.length + 1}`,
+        sourceKey: lessonKey,
+        sourceLabel: lessonLabel,
+        image: img,
+        correct,
+        points
+      });
+
+      saveConfig();
+      applyBrandingToUI();
+      renderFormQuotasUI();
+      renderQuestionBank();
+      document.getElementById('newQImgUrl').value = '';
+      document.getElementById('newQFile').value = '';
+      showToast('تمت إضافة السؤال بنجاح ✓');
+    }
+
+    function deleteQuestion(index) {
+      config.questions.splice(index, 1);
+      saveConfig();
+      applyBrandingToUI();
+      renderFormQuotasUI();
+      renderQuestionBank();
+      showToast('تم حذف السؤال');
+    }
+
+    function clearAllQuestions() {
+      config.questions = [];
+      config.formQuotas = {};
+      saveConfig();
+      applyBrandingToUI();
+      renderFormQuotasUI();
+      renderQuestionBank();
+      showToast('تم مسح جميع الأسئلة');
+    }
+
+    function loadSampleQuestions() {
+      config.questions = structuredClone(DEFAULT_CONFIG.questions);
+      config.formQuotas = {};
+      saveConfig();
+      applyBrandingToUI();
+      renderFormQuotasUI();
+      renderQuestionBank();
+      showToast('تم تحميل الأسئلة التجريبية');
+    }
+
+    function renderQuestionBank() {
+      const listEl = document.getElementById('questionsBankList');
+      document.getElementById('bankCountSpan').textContent = config.questions.length;
+      listEl.innerHTML = '';
+
+      const noImg = config.questions.filter((q) => !hasRealImage(q)).length;
+      const noCorrect = config.questions.filter((q) => !['A', 'B', 'C', 'D'].includes(q.correct)).length;
+      const warnEl = document.getElementById('bankWarnBox');
+      const warnParts = [];
+      if (noImg) warnParts.push(`${noImg} سؤال بدون صورة`);
+      if (noCorrect) warnParts.push(`${noCorrect} سؤال بدون إجابة صحيحة (ستُحسب خطأ لأي طالب)`);
+      warnEl.innerHTML = warnParts.length ? `<div class="bank-warn">⚠ ${warnParts.join(' — ')}. عالجها من الأزرار بجانب كل سؤال.</div>` : '';
+
+      config.questions.forEach((q, idx) => {
+        const real = hasRealImage(q);
+        const missingCorrect = !['A', 'B', 'C', 'D'].includes(q.correct);
+        const opts = ['A', 'B', 'C', 'D'].map((l) => `<option value="${l}" ${q.correct === l ? 'selected' : ''}>${l}</option>`).join('');
+        const row = document.createElement('div');
+        row.className = 'q-bank-item';
+        row.innerHTML = `
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <img src="${getSafeImageSrc(q, idx)}" alt="Q${idx + 1}" style="cursor: zoom-in;" onclick="openZoomSrc(this.src)" />
+            <div>
+              <strong>سؤال #${idx + 1}</strong> <span class="badge-topic">${escapeXml(q.sourceLabel || 'عام')}</span>
+              ${real ? '' : '<span class="warn-badge">⚠ بدون صورة</span>'}
+              ${missingCorrect ? '<span class="warn-badge">⚠ الإجابة الصحيحة غير محددة</span>' : ''}
+              <div style="font-size:0.85rem; margin-top:5px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                الإجابة الصحيحة:
+                <select class="mini-select" onchange="setQuestionCorrect(${idx}, this.value)">
+                  <option value="" ${missingCorrect ? 'selected' : ''}>— اختر —</option>${opts}
+                </select>
+                | الدرجة: <strong>${q.points || 1}</strong>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            ${real ? `<button class="btn btn-outline btn-sm" onclick="openCropModal(${idx})">✂ قص</button>` : ''}
+            <label class="btn btn-outline btn-sm" style="cursor:pointer;">🖼 ${real ? 'استبدال' : 'إضافة'} الصورة
+              <input type="file" accept="image/*" hidden onchange="replaceQuestionImage(${idx}, this)" />
+            </label>
+            <button class="btn btn-danger btn-sm" onclick="deleteQuestion(${idx})">حذف</button>
+          </div>
+        `;
+        listEl.appendChild(row);
+      });
+    }
+
+    async function fetchFormImage(formId, itemId, tries = 3) {
+      let lastErr = new Error('no image');
+      for (let t = 0; t < tries; t++) {
+        try {
+          const res = await fetch(`${config.scriptUrl}?action=getImage&formId=${encodeURIComponent(formId)}&itemId=${encodeURIComponent(itemId)}`);
+          const d = await res.json();
+          if (d.success && isDataUrl(d.image)) return d.image;
+          lastErr = new Error(d.error || 'الصورة لم تُرجَع من السكريبت');
+        } catch (e) {
+          lastErr = e;
+        }
+        await new Promise((r) => setTimeout(r, 700 * (t + 1)));
+      }
+      throw lastErr;
+    }
+
+    let importBusy = false;
+
+    async function importFromGoogleForm() {
+      const url = document.getElementById('googleFormUrlInput').value.trim();
+      const customLabel = document.getElementById('customLessonNameInput').value.trim();
+      const reportEl = document.getElementById('importReport');
+      const btn = document.getElementById('btnImportForm');
+      const setReport = (html) => { reportEl.style.display = 'block'; reportEl.innerHTML = html; };
+
+      if (!config.scriptUrl) {
+        showToast('يرجى إدخال رابط Google Apps Script في الإعدادات أولاً');
+        return;
+      }
+      if (!url) {
+        showToast('يرجى لصق رابط نموذج Google Form');
+        return;
+      }
+      if (importBusy) return;
+      importBusy = true;
+      btn.disabled = true;
+
+      try {
+        setReport('⏳ جاري قراءة أسئلة الفورم...');
+        const res = await fetch(`${config.scriptUrl}?action=importForm&formUrl=${encodeURIComponent(url)}`);
+        const data = await res.json();
+
+        if (!data.success || !Array.isArray(data.questions)) {
+          setReport(`❌ ${escapeXml(data.error || 'تعذر استيراد الأسئلة من النموذج')}`);
+          return;
+        }
+        if (!data.questions.length) {
+          setReport('❌ لم يتم العثور على أسئلة اختيار من متعدد في النموذج.');
+          return;
+        }
+
+        const formId = data.formId;
+        const sourceKey = 'form_' + (formId || Date.now());
+        const sourceLabel = customLabel || data.formTitle || 'فورم مستورد';
+
+        const questions = data.questions.map((item) => ({
+          ...item,
+          sourceKey,
+          sourceLabel,
+          image: typeof item.image === 'string' && item.image.length > 20 ? item.image : ''
+        }));
+
+        const previous = new Map((config.questions || []).filter((q) => q.sourceKey === sourceKey).map((q) => [q.id, q]));
+        questions.forEach((q) => {
+          const old = previous.get(q.id);
+          if (!old) return;
+          if (!q.correct && old.correct) q.correct = old.correct;
+          if (!q.image && hasRealImage(old)) q.image = old.image;
+        });
+
+        const importCrop = readImportCrop();
+        config.imageCrop = importCrop;
+
+        const queue = questions.filter((q) => !q.image && q.imageItemId);
+        const totalImgs = queue.length;
+        const failed = [];
+        let done = 0;
+        const worker = async () => {
+          while (queue.length) {
+            const q = queue.shift();
+            try {
+              q.image = await compressImageDataUrl(await fetchFormImage(formId, q.imageItemId), 1000, 0.8, importCrop);
+            } catch (e) {
+              failed.push(q.number);
+            }
+            done++;
+            setReport(`⏳ جاري تحميل الصور ${done}/${totalImgs} ...`);
+          }
+        };
+        await Promise.all([worker(), worker(), worker()]);
+
+        for (const q of questions) {
+          if (isDataUrl(q.image)) q.image = await compressImageDataUrl(q.image);
+          q.hasImage = hasRealImage(q);
+        }
+
+        config.questions = (config.questions || []).filter((q) => q.sourceKey !== sourceKey);
+        config.questions.push(...questions);
+        if (config.formQuotas && config.formQuotas[sourceKey] === undefined) {
+          config.formQuotas[sourceKey] = 0;
+        }
+
+        const saved = saveConfig();
+        applyBrandingToUI();
+        renderFormQuotasUI();
+        renderQuestionBank();
+
+        const withImg = questions.filter((q) => q.hasImage).length;
+        const noCorrect = questions.filter((q) => !q.correct).length;
+        const notes = [];
+        if (failed.length) notes.push(`فشل تحميل صور الأسئلة رقم: ${failed.sort((a, b) => a - b).join('، ')}`);
+        (data.warnings || []).slice(0, 12).forEach((w) => notes.push(w));
+
+        const allGood = withImg === questions.length && !noCorrect && saved;
+        setReport(`
+          <strong>${allGood ? '✅' : '⚠'} تم استيراد ${questions.length} سؤال من "${escapeXml(sourceLabel)}"</strong>
+          <div style="margin-top:4px;">الأسئلة التي لها صورة: <strong>${withImg}</strong> / ${questions.length}
+          ${noCorrect ? ` — بدون إجابة صحيحة: <strong>${noCorrect}</strong>` : ''}</div>
+          ${notes.length ? `<ul>${notes.map((n) => `<li>${escapeXml(n)}</li>`).join('')}</ul>` : ''}
+        `);
+        showToast(`تم استيراد ${questions.length} سؤال (${withImg} بصورة)`);
+      } catch (err) {
+        setReport(`❌ حدث خطأ أثناء الاتصال بـ Google Apps Script: ${escapeXml(err && err.message ? err.message : String(err))}`);
+      } finally {
+        importBusy = false;
+        btn.disabled = false;
+      }
+    }
+
+    async function fetchResultsFromSheet() {
+      if (!config.scriptUrl) {
+        showToast('أدخل رابط Google Apps Script في الإعدادات أولاً');
+        return;
+      }
+      showToast('جاري جلب النتائج...');
+      try {
+        const endpoint = `${config.scriptUrl}?action=getResults&examTitle=${encodeURIComponent(config.examTitle)}&examCode=${encodeURIComponent(config.examCode || '')}`;
+        const res = await fetch(endpoint);
+        const data = await res.json();
+        if (data.success && Array.isArray(data.results)) {
+          fetchedResults = data.results;
+          populateGroupFilter();
+          renderResultsTable();
+          showToast(`تم جلب ${fetchedResults.length} نتيجة ✓`);
+        } else {
+          showToast(data.error || 'تعذر جلب النتائج');
+        }
+      } catch (e) {
+        showToast('خطأ في الاتصال بقاعدة البيانات');
+      }
+    }
+
+    async function deleteResultsFromSheet(ri) {
+      if (!config.scriptUrl) {
+        showToast('رابط Google Apps Script غير مضبوط');
+        return;
+      }
+      const single = (typeof ri === 'number') ? fetchedResults[ri] : null;
+      if (typeof ri === 'number' && !single) return;
+
+      const examCode = (single && single.examCode) || config.examCode || '';
+      const examTitle = (single && single.examTitle) || config.examTitle || '';
+      if (!single && !examCode) {
+        showToast('اكتب كود الامتحان أولاً أو اضغط تحديث النتائج');
+        return;
+      }
+
+      const msg = single
+        ? `مسح نتيجة الطالب ${single.studentId} (${single.studentName}) نهائياً؟`
+        : `مسح كل نتائج الامتحان (${examCode || examTitle}) نهائياً من Google Sheet؟\nلا يمكن التراجع.`;
+      if (!confirm(msg)) return;
+
+      const pass = prompt('اكتب كلمة مرور المسح للتأكيد:');
+      if (pass === null) return;
+
+      showToast('جاري مسح النتائج...');
+      try {
+        await fetch(config.scriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: 'deleteResults',
+            adminPass: pass,
+            examCode: examCode,
+            examTitle: examTitle,
+            studentId: single ? single.studentId : ''
+          })
+        });
+        const before = fetchedResults.length;
+        setTimeout(async () => {
+          await fetchResultsFromSheet();
+          if (fetchedResults.length < before) showToast(`تم المسح ✓ (المتبقي ${fetchedResults.length})`);
+          else showToast('لم يتم المسح — راجع كلمة المرور أو تحديث كود Apps Script');
+        }, 2500);
+      } catch (e) {
+        showToast('تعذر مسح النتائج');
+      }
+    }
+
+    function populateGroupFilter() {
+      const sel = document.getElementById('filterGroupSelect');
+      const fromResults = fetchedResults.map((r) => r.groupName).filter(Boolean);
+      const groups = [...new Set([...(config.groups || []), ...fromResults])];
+      sel.innerHTML = '<option value="ALL">كل المجموعات</option>';
+      groups.forEach((g) => {
+        const opt = document.createElement('option');
+        opt.value = g;
+        opt.textContent = g;
+        sel.appendChild(opt);
+      });
+    }
+
+    function parseStudentIdParts(codeStr) {
+      const clean = String(codeStr || '').trim().toUpperCase();
+      const match = clean.match(/^([A-Z])([0-9]+)$/);
+      if (!match) return { letter: clean, num: Number.MAX_SAFE_INTEGER };
+      return { letter: match[1], num: parseInt(match[2], 10) };
+    }
+
+    function getSortedFilteredResults() {
+      const groupFilter = document.getElementById('filterGroupSelect').value;
+      const sortBy = document.getElementById('sortResultsBy').value;
+
+      let rows = fetchedResults.filter((r) => groupFilter === 'ALL' || r.groupName === groupFilter);
+
+      rows.sort((a, b) => {
+        if (sortBy === 'id_asc') {
+          const idA = parseStudentIdParts(a.studentId);
+          const idB = parseStudentIdParts(b.studentId);
+          if (idA.letter !== idB.letter) return idA.letter.localeCompare(idB.letter);
+          return idA.num - idB.num;
+        }
+        if (sortBy === 'score_desc') return b.percentage - a.percentage;
+        if (sortBy === 'score_asc') return a.percentage - b.percentage;
+        if (sortBy === 'time_asc') return a.timeTakenSec - b.timeTakenSec;
+        if (sortBy === 'name_asc') return a.studentName.localeCompare(b.studentName, 'ar');
+        return 0;
+      });
+
+      return rows;
+    }
+
+    function formatAnswersSummary(ansObj) {
+      if (!ansObj || typeof ansObj !== 'object') return '-';
+      return Object.values(ansObj).map((a) => `Q${a.questionNumber}:${a.selected}`).join(', ');
+    }
+
+    function renderResultsTable() {
+      const tbody = document.getElementById('resultsTableBody');
+      const hideNames = document.getElementById('privacyModeSelect').value === 'hide_names';
+      const rows = getSortedFilteredResults();
+
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align: center; padding: 24px;">لا توجد نتائج مطابقة.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = rows.map((r, idx) => {
+        const ri = fetchedResults.indexOf(r);
+        return `
+        <tr>
+          <td>${idx + 1}</td>
+          <td><strong>${escapeXml(r.studentId)}</strong></td>
+          <td>${hideNames ? '••• (مخفي)' : escapeXml(r.studentName)}</td>
+          <td>${escapeXml(r.groupName)}</td>
+          <td><strong>${r.score}</strong> / ${r.totalQuestions}</td>
+          <td><span class="${r.percentage >= 50 ? 'badge-pass' : 'badge-fail'}">${r.percentage}%</span></td>
+          <td>${r.timeTakenSec} ث</td>
+          <td>${r.tabSwitches}</td>
+          <td>${escapeXml(r.status)}</td>
+          <td style="font-size: 0.78rem; color: var(--text-muted);">${escapeXml(formatAnswersSummary(r.answers))}</td>
+          <td>
+            <button class="btn btn-outline btn-sm" onclick="openStudentAnswers(${ri})">👁 الإجابات</button>
+            <button class="btn btn-wa btn-sm" onclick="sendWhatsApp(${ri})" title="إرسال عبر واتساب">📲</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteResultsFromSheet(${ri})" title="مسح نتيجة هذا الطالب">🗑</button>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    function exportResultsToExcel() {
+      const rows = getSortedFilteredResults();
+      if (!rows.length) {
+        showToast('لا توجد بيانات لتصديرها إلى Excel');
+        return;
+      }
+      const hideNames = document.getElementById('privacyModeSelect').value === 'hide_names';
+      const exportData = rows.map((r, i) => ({
+        '#': i + 1,
+        'Exam Code': r.examCode || config.examCode || '',
+        'Student ID': r.studentId,
+        'Student Name': hideNames ? 'Hidden' : r.studentName,
+        'Group': r.groupName,
+        'Phone': hideNames ? '' : r.phone,
+        'Score': r.score,
+        'Total': r.totalQuestions,
+        'Percentage (%)': r.percentage,
+        'Time Taken (sec)': r.timeTakenSec,
+        'Tab Switches': r.tabSwitches,
+        'Status': r.status,
+        'Answers': formatAnswersSummary(r.answers)
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Results');
+
+      const detail = [];
+      rows.forEach((r) => {
+        normalizeStudentAnswers(r).forEach((it) => {
+          detail.push({
+            'Student ID': r.studentId,
+            'Student Name': hideNames ? 'Hidden' : r.studentName,
+            'Group': r.groupName,
+            'Q #': it.number,
+            'Lesson': it.label,
+            'Question ID': it.id,
+            'Student Answer': it.answered ? it.selected : 'No answer',
+            'Correct Answer': it.correct,
+            'Result': it.isCorrect ? 'Correct' : (it.answered ? 'Wrong' : 'Unanswered'),
+            'Points': it.points,
+            'Time (sec)': it.timeSpentSec === null || it.timeSpentSec === undefined ? '' : it.timeSpentSec
+          });
+        });
+      });
+      if (detail.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(detail), 'Answers_Detail');
+      XLSX.writeFile(wb, `${config.examTitle.replace(/\s+/g, '_')}_Results.xlsx`);
+      showToast('تم تصدير ملف Excel بنجاح ✓');
+    }
+
+    function exportResultsToPDF() {
+      const rows = getSortedFilteredResults();
+      if (!rows.length) {
+        showToast('لا توجد بيانات لتصديرها إلى PDF');
+        return;
+      }
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'landscape' });
+      const hideNames = document.getElementById('privacyModeSelect').value === 'hide_names';
+
+      doc.setFontSize(14);
+      doc.text(`${config.brandName} - ${config.examTitle}`, 14, 15);
+
+      const tableColumn = ['#', 'Student ID', 'Name', 'Group', 'Score', '%', 'Time (s)', 'Tab Switches', 'Status'];
+      const tableRows = rows.map((r, idx) => [
+        idx + 1,
+        r.studentId,
+        hideNames ? 'Hidden' : r.studentName,
+        r.groupName,
+        `${r.score}/${r.totalQuestions}`,
+        `${r.percentage}%`,
+        r.timeTakenSec,
+        r.tabSwitches,
+        r.status
+      ]);
+
+      doc.autoTable({ head: [tableColumn], body: tableRows, startY: 22, styles: { fontSize: 9 } });
+      doc.save(`${config.examTitle.replace(/\s+/g, '_')}_Results.pdf`);
+      showToast('تم تصدير ملف PDF بنجاح ✓');
+    }
+
+    let currentAnswersRi = -1;
+
+    function normalizeStudentAnswers(r) {
+      const answers = r && r.answers && typeof r.answers === 'object' ? r.answers : {};
+      let ids = Array.isArray(r.questionOrder) && r.questionOrder.length
+        ? r.questionOrder.map(String)
+        : Object.keys(answers).sort((a, b) => (answers[a].questionNumber || 0) - (answers[b].questionNumber || 0));
+      Object.keys(answers).forEach((id) => { if (!ids.includes(id)) ids.push(id); });
+
+      return ids.map((id, i) => {
+        const a = answers[id] || null;
+        const q = (config.questions || []).find((x) => String(x.id) === String(id)) || null;
+        const answered = !!a && a.selected && a.selected !== 'NO_ANSWER';
+        return {
+          id,
+          number: i + 1,
+          q,
+          answered,
+          selected: a ? a.selected : null,
+          correct: (a && a.correct) || (q && q.correct) || '',
+          isCorrect: !!(a && a.isCorrect),
+          points: a ? Number(a.points || 0) : 0,
+          timeSpentSec: a && a.timeSpentSec !== undefined ? a.timeSpentSec : null,
+          label: (a && a.sourceLabel) || (q && q.sourceLabel) || ''
+        };
+      });
+    }
+
+    function openStudentAnswers(ri) {
+      const r = fetchedResults[ri];
+      if (!r) return;
+      currentAnswersRi = ri;
+      const items = normalizeStudentAnswers(r);
+      document.getElementById('saTitle').textContent = `${r.studentName} (${r.studentId}) — ${r.groupName}`;
+      document.getElementById('saMeta').textContent = `الدرجة: ${r.score} / ${r.totalQuestions} (${r.percentage}%) • الوقت: ${r.timeTakenSec} ث • الهاتف: ${r.phone || '—'}`;
+
+      const list = document.getElementById('saList');
+      if (!items.length) {
+        list.innerHTML = '<p style="color: var(--text-muted);">لا توجد إجابات مسجلة لهذا الطالب.</p>';
+      } else {
+        list.innerHTML = items.map((it) => {
+          const img = it.q
+            ? `<img src="${getSafeImageSrc(it.q, it.number - 1)}" alt="Q${it.number}" onclick="openZoomSrc(this.src)" />`
+            : '<div class="warn-badge">السؤال غير موجود حالياً في البنك</div>';
+          const verdict = it.isCorrect ? '<span class="badge-pass">صحيح ✓</span>'
+            : (it.answered ? '<span class="badge-fail">خطأ ✕</span>' : '<span class="badge-unsent">لم يُجب</span>');
+          return `
+            <div class="q-bank-item sa-row">
+              <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                ${img}
+                <div>
+                  <strong>سؤال ${it.number}</strong> <span class="badge-topic">${escapeXml(it.label)}</span>
+                  <div style="font-size:0.9rem; margin-top:4px;">
+                    إجابة الطالب: <strong>${it.answered ? escapeXml(it.selected) : '—'}</strong>
+                    | الصحيحة: <strong>${escapeXml(it.correct || '—')}</strong>
+                    ${it.timeSpentSec !== null ? `| ⏱ ${it.timeSpentSec} ث` : ''}
+                  </div>
+                </div>
+              </div>
+              ${verdict}
+            </div>`;
+        }).join('');
+      }
+      document.getElementById('studentAnswersModal').classList.add('open');
+    }
+
+    function closeStudentAnswers() {
+      document.getElementById('studentAnswersModal').classList.remove('open');
+    }
+
+    function buildStudentMessage(r) {
+      const items = normalizeStudentAnswers(r);
+      const lines = [];
+      lines.push(`*${config.brandName}*`);
+      lines.push(`📝 ${r.examTitle || config.examTitle}`);
+      lines.push(`👤 ${r.studentName} (${r.studentId})`);
+      lines.push(`🎯 الدرجة: ${r.score} / ${r.totalQuestions} (${r.percentage}%)`);
+      lines.push('');
+      lines.push('*إجاباتك سؤال بسؤال:*');
+      items.forEach((it) => {
+        const mine = it.answered ? it.selected : 'لم تُجب';
+        if (it.isCorrect) lines.push(`${it.number}) ${mine} ✅`);
+        else lines.push(`${it.number}) إجابتك: ${mine} ❌ — الصحيحة: ${it.correct || '—'}`);
+      });
+      return lines.join('\n');
+    }
+
+    function normalizePhoneForWa(raw) {
+      let s = String(raw || '')
+        .replace(/[٠-٩]/g, (c) => String(c.charCodeAt(0) - 1632))
+        .replace(/[۰-۹]/g, (c) => String(c.charCodeAt(0) - 1776))
+        .replace(/[^\d]/g, '');
+      if (s.startsWith('00')) s = s.slice(2);
+      else if (s.startsWith('0')) s = (config.waCountryCode || '20') + s.slice(1);
+      return s.length >= 8 ? s : '';
+    }
+
+    function readSentMarks() {
+      try { return JSON.parse(localStorage.getItem(SENT_KEY) || '{}'); } catch (e) { return {}; }
+    }
+    function sentKey(r) { return `${r.examCode || ''}|${r.examTitle || config.examTitle}|${r.studentId}`; }
+    function isSent(r) { return !!readSentMarks()[sentKey(r)]; }
+    function markSent(r) {
+      const m = readSentMarks();
+      m[sentKey(r)] = Date.now();
+      try { localStorage.setItem(SENT_KEY, JSON.stringify(m)); } catch (e) {}
+    }
+    function resetSentMarks() {
+      try { localStorage.removeItem(SENT_KEY); } catch (e) {}
+      renderBulkList();
+      showToast('تمت إعادة ضبط حالة الإرسال');
+    }
+
+    function sendWhatsApp(ri) {
+      const r = fetchedResults[ri];
+      if (!r) return;
+      const phone = normalizePhoneForWa(r.phone);
+      if (!phone) {
+        showToast('رقم هاتف الطالب غير صالح أو غير مسجل');
+        return;
+      }
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(buildStudentMessage(r))}`, '_blank', 'noopener');
+      markSent(r);
+      if (document.getElementById('bulkSendModal').classList.contains('open')) renderBulkList();
+    }
+
+    async function copyStudentMessage(ri) {
+      const r = fetchedResults[ri];
+      if (!r) return;
+      try {
+        await navigator.clipboard.writeText(buildStudentMessage(r));
+        showToast('تم نسخ الرسالة ✓');
+      } catch (e) {
+        window.prompt('انسخ الرسالة:', buildStudentMessage(r));
+      }
+    }
+
+    function openBulkSendModal() {
+      if (!fetchedResults.length) {
+        showToast('حدّث النتائج أولاً');
+        return;
+      }
+      renderBulkList();
+      document.getElementById('bulkSendModal').classList.add('open');
+    }
+
+    function closeBulkSendModal() {
+      document.getElementById('bulkSendModal').classList.remove('open');
+    }
+
+    function renderBulkList() {
+      const onlyUnsent = document.getElementById('bulkOnlyUnsent').checked;
+      let rows = getSortedFilteredResults();
+      if (onlyUnsent) rows = rows.filter((r) => !isSent(r));
+      const box = document.getElementById('bulkList');
+      if (!rows.length) {
+        box.innerHTML = '<p style="color: var(--text-muted);">لا يوجد طلاب في القائمة.</p>';
+        return;
+      }
+      box.innerHTML = rows.map((r) => {
+        const ri = fetchedResults.indexOf(r);
+        const phoneOk = !!normalizePhoneForWa(r.phone);
+        return `
+          <div class="q-bank-item">
+            <div>
+              <strong>${escapeXml(r.studentName)}</strong> <span class="badge-topic">${escapeXml(r.studentId)}</span>
+              <div style="font-size:0.84rem; color: var(--text-muted); margin-top:3px;">
+                ${escapeXml(r.groupName)} • ${r.score}/${r.totalQuestions} (${r.percentage}%) • ${escapeXml(r.phone || 'بدون رقم')}
+              </div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              ${isSent(r) ? '<span class="badge-sent">تم الإرسال ✓</span>' : '<span class="badge-unsent">لم يُرسل</span>'}
+              <button class="btn btn-wa btn-sm" ${phoneOk ? '' : 'disabled'} onclick="sendWhatsApp(${ri})">📲 واتساب</button>
+              <button class="btn btn-outline btn-sm" onclick="openStudentAnswers(${ri})">👁</button>
+              <button class="btn btn-outline btn-sm" onclick="printReports([fetchedResults[${ri}]])">🖨 PDF</button>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function openNextUnsent() {
+      const next = getSortedFilteredResults().find((r) => !isSent(r) && normalizePhoneForWa(r.phone));
+      if (!next) {
+        showToast('تم الإرسال لجميع الطلاب في القائمة ✓');
+        return;
+      }
+      sendWhatsApp(fetchedResults.indexOf(next));
+    }
+
+    function printReports(list) {
+      const results = (list || []).filter(Boolean);
+      if (!results.length) {
+        showToast('لا توجد نتائج لطباعتها');
+        return;
+      }
+      const w = window.open('', '_blank');
+      if (!w) {
+        showToast('المتصفح منع النافذة المنبثقة — اسمح بها ثم أعد المحاولة');
+        return;
+      }
+
+      const sections = results.map((r) => {
+        const items = normalizeStudentAnswers(r);
+        const qs = items.map((it) => {
+          const cls = it.isCorrect ? 'ok' : (it.answered ? 'bad' : 'na');
+          const verdict = it.isCorrect ? 'صحيح ✓' : (it.answered ? 'خطأ ✕' : 'لم يُجب');
+          const img = it.q ? `<img src="${getSafeImageSrc(it.q, it.number - 1)}" />` : '<div class="miss">صورة السؤال غير متاحة</div>';
+          return `
+            <div class="q ${cls}">
+              <div class="qh"><span>سؤال ${it.number}${it.label ? ' — ' + escapeXml(it.label) : ''}</span><span class="st">${verdict}</span></div>
+              ${img}
+              <div class="ans">إجابتك: <b>${it.answered ? escapeXml(it.selected) : '—'}</b> &nbsp;|&nbsp; الإجابة الصحيحة: <b>${escapeXml(it.correct || '—')}</b></div>
+            </div>`;
+        }).join('');
+        return `
+          <section class="stu">
+            <header>
+              <h1>${escapeXml(config.brandName)}</h1>
+              <h2>${escapeXml(r.examTitle || config.examTitle)}</h2>
+              <div class="meta">الطالب: <b>${escapeXml(r.studentName)}</b> &nbsp;|&nbsp; الكود: <b>${escapeXml(r.studentId)}</b> &nbsp;|&nbsp; المجموعة: <b>${escapeXml(r.groupName)}</b> &nbsp;|&nbsp; الدرجة: <b>${r.score} / ${r.totalQuestions} (${r.percentage}%)</b></div>
+            </header>
+            ${qs || '<p>لا توجد إجابات مسجلة.</p>'}
+          </section>`;
+      }).join('');
+
+      const html = `<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>تقرير الطلاب</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 12mm; }
+  * { box-sizing: border-box; }
+  body { font-family: 'Cairo', Tahoma, Arial, sans-serif; color: #0f172a; margin: 0; }
+  .stu { page-break-after: always; }
+  .stu:last-child { page-break-after: auto; }
+  header { border-bottom: 3px solid #2563eb; margin-bottom: 12px; padding-bottom: 8px; }
+  h1 { font-size: 20px; margin: 0; } h2 { font-size: 15px; margin: 2px 0 6px; color: #475569; }
+  .meta { font-size: 13px; }
+  .q { border: 1px solid #cbd5e1; border-radius: 10px; padding: 8px 10px; margin-bottom: 10px; break-inside: avoid; }
+  .q.ok { border-color: #059669; } .q.bad { border-color: #dc2626; } .q.na { border-color: #94a3b8; }
+  .qh { display: flex; justify-content: space-between; font-weight: 700; font-size: 13px; margin-bottom: 6px; }
+  .q.ok .st { color: #059669; } .q.bad .st { color: #dc2626; } .q.na .st { color: #64748b; }
+  img { display: block; max-width: 100%; max-height: 240px; object-fit: contain; margin: 0 auto 6px; }
+  .ans { font-size: 13px; } .miss { color: #b45309; font-size: 12px; margin-bottom: 6px; }
+</style></head><body>${sections}
+<script>window.addEventListener('load', function () { setTimeout(function () { window.print(); }, 300); });<\/script>
+</body></html>`;
+
+      w.document.open();
+      w.document.write(html);
+      w.document.close();
+    }
+
+    initApp();
+  </script>
+</body>
+</html>
