@@ -188,18 +188,21 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 5px 14px;
+      padding: 8px 18px;
       border-radius: 999px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      background: rgba(37, 99, 235, 0.1);
+      font-size: 0.88rem;
+      font-weight: 800;
+      background: rgba(255, 255, 255, 0.95);
       color: var(--primary);
-      margin-bottom: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      animation: bounce 3s ease-in-out infinite;
+      transition: all 0.3s ease;
     }
 
     .pill.comprehensive {
-      background: rgba(124, 58, 237, 0.12);
+      background: rgba(255, 255, 255, 0.95);
       color: var(--accent);
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
     }
 
     h1.exam-title {
@@ -590,12 +593,12 @@
 
     @keyframes float {
       0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-8px); }
+      50% { transform: translateY(-5px); }
     }
 
     @keyframes pulse {
       0%, 100% { transform: scale(1); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
-      50% { transform: scale(1.05); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5); }
+      50% { transform: scale(1.03); box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4); }
     }
 
     @keyframes shimmer {
@@ -610,7 +613,7 @@
 
     @keyframes bounce {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+      50% { transform: translateY(-5px); }
     }
 
     /* Apply animations */
@@ -626,7 +629,7 @@
     }
 
     .brand-mini img {
-      animation: float 3s ease-in-out infinite;
+      animation: float 5s ease-in-out infinite;
       transition: all 0.4s var(--ease-spring);
     }
 
@@ -636,7 +639,7 @@
     }
 
     .brand-badge {
-      animation: pulse 2.5s ease-in-out infinite;
+      animation: pulse 4s ease-in-out infinite;
     }
 
     .top-actions {
@@ -644,7 +647,7 @@
     }
 
     .hero-logo {
-      animation: float 4s ease-in-out infinite, glow 3s ease-in-out infinite;
+      animation: float 6s ease-in-out infinite;
       transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -653,7 +656,17 @@
     }
 
     .pill {
-      animation: bounce 2s ease-in-out infinite;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--primary);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      animation: bounce 3s ease-in-out infinite;
       transition: all 0.3s ease;
     }
 
@@ -832,9 +845,11 @@
 
     <section id="welcomeScreen" class="screen active">
       <div class="card hero-card">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 20px;">
         <img id="welcomeLogo" class="hero-logo" src="./LOGO_NAME.png" alt="Exam Logo" />
         <div id="welcomeExamTypePill" class="pill">اختبار قصير (Quiz)</div>
-        <h1 class="exam-title" id="welcomeExamTitle">اختبار الفيزياء — الحركة والقوى</h1>
+      </div>
+      <h1 class="exam-title" id="welcomeExamTitle">اختبار الفيزياء — الحركة والقوى</h1>
         <p class="subtitle" id="welcomeExamDesc">أجب عن الأسئلة المصورة بدقة. يتم حفظ إجابتك تلقائياً بعد كل سؤال ولا يمكن الرجوع للسؤال السابق.</p>
 
         <div class="meta-strip">
@@ -983,11 +998,11 @@
     </section>
 
     <section id="resultScreen" class="screen">
-      <div class="card hero-card" id="resultSummaryBox">
+      <div class="card hero-card" id="resultSummaryBox" style="text-align: center;">
         <div class="pill" style="background: rgba(5, 150, 105, 0.14); color: var(--success);">تم تسليم الاختبار بنجاح</div>
         <h2 style="font-size: 1.55rem; font-weight: 900; margin-bottom: 6px;" id="resultStudentTitle">شكراً لك</h2>
         <p class="subtitle" id="resultStatusMsg">تم تسجيل إجاباتك ودرجاتك في قاعدة البيانات.</p>
-        <div id="scoreDisplayArea" style="margin: 18px 0;"></div>
+        <div id="scoreDisplayArea" style="margin: 24px 0; display: flex; justify-content: center;"></div>
         <button type="button" class="btn btn-outline" onclick="resetForNewStudent()">العودة لشاشة البداية</button>
       </div>
 
@@ -3357,12 +3372,12 @@
 
     @keyframes float {
       0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-8px); }
+      50% { transform: translateY(-5px); }
     }
 
     @keyframes pulse {
       0%, 100% { transform: scale(1); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
-      50% { transform: scale(1.05); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5); }
+      50% { transform: scale(1.03); box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4); }
     }
 
     @keyframes shimmer {
@@ -3377,7 +3392,7 @@
 
     @keyframes bounce {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+      50% { transform: translateY(-5px); }
     }
 
     /* Apply animations */
@@ -3393,7 +3408,7 @@
     }
 
     .brand-mini img {
-      animation: float 3s ease-in-out infinite;
+      animation: float 5s ease-in-out infinite;
       transition: all 0.4s var(--ease-spring);
     }
 
@@ -3403,7 +3418,7 @@
     }
 
     .brand-badge {
-      animation: pulse 2.5s ease-in-out infinite;
+      animation: pulse 4s ease-in-out infinite;
     }
 
     .top-actions {
@@ -3411,7 +3426,7 @@
     }
 
     .hero-logo {
-      animation: float 4s ease-in-out infinite, glow 3s ease-in-out infinite;
+      animation: float 6s ease-in-out infinite;
       transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -3420,7 +3435,17 @@
     }
 
     .pill {
-      animation: bounce 2s ease-in-out infinite;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--primary);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      animation: bounce 3s ease-in-out infinite;
       transition: all 0.3s ease;
     }
 
