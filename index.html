@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>منصة الاختبارات التفاعلية الذكية — Mr / Omar Abd Al Hady</title>
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="./LOGO_NAME.png">
-  <link rel="apple-touch-icon" href="./LOGO_NAME.png">
+  <link rel="icon" type="image/png" href="./LOGO_NAME.png" />
+  <link rel="shortcut icon" type="image/png" href="./LOGO_NAME.png" />
+  <link rel="apple-touch-icon" href="./LOGO_NAME.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,7 +37,6 @@
       --shadow-card: 0 14px 35px -12px rgba(15, 23, 42, 0.1), 0 4px 12px -4px rgba(15, 23, 42, 0.05);
       --shadow-float: 0 20px 45px -10px rgba(37, 99, 235, 0.28);
       --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
-      --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     * {
@@ -64,7 +64,6 @@
     }
 
     .topbar {
-      animation: slideDown 0.6s var(--ease-spring);
       position: sticky;
       top: 0;
       z-index: 40;
@@ -79,7 +78,6 @@
     }
 
     .brand-mini {
-      animation: fadeInLeft 0.8s var(--ease-spring);
       display: flex;
       align-items: center;
       gap: 10px;
@@ -110,7 +108,6 @@
     }
 
     .top-actions {
-      animation: fadeInRight 0.8s var(--ease-spring);
       display: flex;
       align-items: center;
       gap: 8px;
@@ -175,7 +172,6 @@
 
     /* Adjusted welcome logo frame for balanced proportions and clean spacing */
     .hero-logo {
-      animation: float 3s ease-in-out infinite;
       width: auto;
       max-width: 240px;
       height: 112px;
@@ -189,7 +185,6 @@
     }
 
     .pill {
-      animation: fadeInDown 0.6s var(--ease-spring);
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -208,11 +203,6 @@
     }
 
     h1.exam-title {
-      animation: fadeIn 0.8s var(--ease-spring);
-      background: linear-gradient(135deg, var(--text-main), var(--primary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
       font-size: clamp(1.45rem, 3.2vw, 2.1rem);
       font-weight: 900;
       color: var(--text-main);
@@ -234,19 +224,12 @@
     }
 
     .meta-box {
-      animation: fadeInUp 0.6s var(--ease-spring) backwards;
       background: var(--bg-soft);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       padding: 12px;
       text-align: center;
     }
-
-
-    .meta-box:nth-child(1) { animation-delay: 0.1s; }
-    .meta-box:nth-child(2) { animation-delay: 0.2s; }
-    .meta-box:nth-child(3) { animation-delay: 0.3s; }
-    .meta-box:nth-child(4) { animation-delay: 0.4s; }
 
     .meta-box .label { font-size: 0.78rem; color: var(--text-muted); font-weight: 700; }
     .meta-box .val { font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-top: 2px; }
@@ -307,29 +290,6 @@
       font-weight: 800;
       font-size: 0.95rem;
       cursor: pointer;
-    }
-
-
-    .btn::before {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.3);
-      transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
-    }
-
-    .btn:hover::before {
-      width: 300px;
-      height: 300px;
-    }
-
-    .btn:active {
-      transform: scale(0.95);
     }
 
     .btn:disabled { opacity: 0.45; cursor: not-allowed; }
@@ -599,35 +559,21 @@
     .badge-unsent { background: rgba(100, 116, 139, 0.14); color: var(--text-muted); padding: 3px 9px; border-radius: 999px; font-weight: 800; font-size: 0.76rem; }
     .q-bank-item.sa-row img { width: 150px; height: 92px; cursor: zoom-in; }
     .bank-warn { background: rgba(217, 119, 6, 0.1); border: 1px solid rgba(217, 119, 6, 0.35); color: #92400e; border-radius: var(--radius-sm); padding: 8px 12px; font-size: 0.86rem; font-weight: 700; margin-bottom: 10px; }
-
-    /* ============ ENHANCED ANIMATIONS & EFFECTS ============ */
-    @keyframes float {
-      0%, 100% { transform: translateY(0) rotate(0deg); }
-      50% { transform: translateY(-20px) rotate(5deg); }
+  
+    /* Particles Canvas */
+    #particles-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.25;
     }
 
-    @keyframes particle-float {
-      0% { transform: translate(0, 0) scale(1); opacity: 0.6; }
-      50% { transform: translate(var(--tx), var(--ty)) scale(1.2); opacity: 1; }
-      100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
-    }
-
-    @keyframes glow-pulse {
-      0%, 100% { opacity: 0.5; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.1); }
-    }
-
-    @keyframes shimmer {
-      0% { background-position: -1000px 0; }
-      100% { background-position: 1000px 0; }
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes fadeInDown {
+    /* Enhanced animations */
+    @keyframes slideDown {
       from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
     }
@@ -642,113 +588,233 @@
       to { opacity: 1; transform: translateX(0); }
     }
 
-    @keyframes slideDown {
-      from { transform: translateY(-100%); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
     }
 
     @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
+      0%, 100% { transform: scale(1); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+      50% { transform: scale(1.05); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5); }
     }
 
-    @keyframes selected-bounce {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
+    @keyframes shimmer {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
     }
 
-    @keyframes danger-pulse {
-      0%, 100% { transform: scale(1); box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3); }
-      50% { transform: scale(1.05); box-shadow: 0 6px 25px rgba(220, 38, 38, 0.5); }
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 5px rgba(37, 99, 235, 0.5), 0 0 10px rgba(37, 99, 235, 0.3); }
+      50% { box-shadow: 0 0 10px rgba(37, 99, 235, 0.8), 0 0 20px rgba(37, 99, 235, 0.5), 0 0 30px rgba(37, 99, 235, 0.3); }
     }
 
-    @keyframes slideInDown {
-      from { opacity: 0; transform: translateY(-30px); }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* Apply animations */
+    .topbar {
+      animation: slideDown 0.6s var(--ease-spring);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.08);
+    }
+
+    .brand-mini {
+      animation: fadeInLeft 0.8s var(--ease-spring);
+    }
+
+    .brand-mini img {
+      animation: float 3s ease-in-out infinite;
+      transition: all 0.4s var(--ease-spring);
+    }
+
+    .brand-mini img:hover {
+      transform: scale(1.08) rotate(3deg);
+      box-shadow: 0 8px 25px -4px rgba(37, 99, 235, 0.4);
+    }
+
+    .brand-badge {
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+
+    .top-actions {
+      animation: fadeInRight 0.8s var(--ease-spring);
+    }
+
+    .hero-logo {
+      animation: float 4s ease-in-out infinite, glow 3s ease-in-out infinite;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .hero-logo:hover {
+      transform: scale(1.05) rotate(2deg);
+    }
+
+    .pill {
+      animation: bounce 2s ease-in-out infinite;
+      transition: all 0.3s ease;
+    }
+
+    .pill:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: cardAppear 0.6s var(--ease-spring);
+    }
+
+    @keyframes cardAppear {
+      from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    @keyframes modalSlideUp {
-      from { opacity: 0; transform: translateY(50px) scale(0.9); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    /* Particles Container */
-    .particles-container {
-      position: fixed;
+    .card::before {
+      content: "";
+      position: absolute;
       top: 0;
-      left: 0;
+      left: -100%;
       width: 100%;
       height: 100%;
-      pointer-events: none;
-      z-index: 1;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transition: left 0.6s;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-float);
+    }
+
+    .card:hover::before {
+      left: 100%;
+    }
+
+    .btn {
+      position: relative;
       overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .particle {
+    .btn::before {
+      content: "";
       position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
       border-radius: 50%;
-      animation: particle-float 6s ease-in-out infinite;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
     }
 
-    .particle-1 {
-      width: 60px;
-      height: 60px;
-      background: radial-gradient(circle, rgba(37, 99, 235, 0.3), transparent);
-      top: 10%;
-      left: 15%;
-      --tx: 30px;
-      --ty: -40px;
-      animation-delay: 0s;
-      animation-duration: 8s;
+    .btn:hover::before {
+      width: 300px;
+      height: 300px;
     }
 
-    .particle-2 {
-      width: 80px;
-      height: 80px;
-      background: radial-gradient(circle, rgba(124, 58, 237, 0.25), transparent);
-      top: 60%;
-      right: 10%;
-      --tx: -40px;
-      --ty: 30px;
-      animation-delay: 1.5s;
-      animation-duration: 10s;
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.4);
     }
 
-    .particle-3 {
-      width: 50px;
-      height: 50px;
-      background: radial-gradient(circle, rgba(6, 182, 212, 0.3), transparent);
-      bottom: 20%;
-      left: 20%;
-      --tx: 25px;
-      --ty: -35px;
-      animation-delay: 3s;
-      animation-duration: 7s;
+    .btn:active {
+      transform: translateY(0);
     }
 
-    .particle-4 {
-      width: 70px;
-      height: 70px;
-      background: radial-gradient(circle, rgba(236, 72, 153, 0.2), transparent);
-      top: 30%;
-      right: 25%;
-      --tx: -30px;
-      --ty: 40px;
-      animation-delay: 2s;
-      animation-duration: 9s;
+    .tab-btn {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .tab-btn::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transition: width 0.3s ease;
+    }
+
+    .tab-btn:hover::after {
+      width: 100%;
+    }
+
+    .tab-btn.active::after {
+      width: 100%;
+    }
+
+    .tab-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .choice-btn {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .choice-btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 8px 20px -6px rgba(37, 99, 235, 0.3);
+    }
+
+    .choice-btn.selected {
+      animation: pulse 0.5s ease;
+    }
+
+    .meta-box {
+      transition: all 0.3s ease;
+    }
+
+    .meta-box:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 20px -4px rgba(37, 99, 235, 0.2);
+    }
+
+    .hero-card::before {
+      background: linear-gradient(90deg, var(--primary), var(--accent), #06b6d4);
+      background-size: 200% 100%;
+      animation: shimmer 3s linear infinite;
+    }
+
+    /* Smooth body background */
+    body {
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 50%, rgba(37, 99, 235, 0.08) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 50%, rgba(124, 58, 237, 0.08) 0%, transparent 50%);
+      animation: rotateBackground 20s ease-in-out infinite;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    @keyframes rotateBackground {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(180deg); }
     }
 
   </style>
 </head>
 <body>
+  <!-- Particles Background -->
+  <canvas id="particles-canvas"></canvas>
 
-  <!-- Particles Container -->
-  <div class="particles-container">
-    <div class="particle particle-1"></div>
-    <div class="particle particle-2"></div>
-    <div class="particle particle-3"></div>
-    <div class="particle particle-4"></div>
-  </div>
+
 
   <header class="topbar">
     <div class="brand-mini">
@@ -771,7 +837,7 @@
         <h1 class="exam-title" id="welcomeExamTitle">اختبار الفيزياء — الحركة والقوى</h1>
         <p class="subtitle" id="welcomeExamDesc">أجب عن الأسئلة المصورة بدقة. يتم حفظ إجابتك تلقائياً بعد كل سؤال ولا يمكن الرجوع للسؤال السابق.</p>
 
-<div class="meta-strip">
+        <div class="meta-strip">
           <div class="meta-box">
             <div class="label">كود الامتحان</div>
             <div class="val" id="metaExamCode" style="direction:ltr;">MAIN</div>
@@ -788,10 +854,10 @@
             <div class="label">نوع الأسئلة</div>
             <div class="val">Image MCQ (A, B, C, D)</div>
           </div>
+        </div>
       </div>
 
-
-            <div class="card">
+      <div class="card">
         <h2 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 14px;">كود الامتحان وتسجيل بيانات الطالب</h2>
 
         <div class="exam-code-bar">
@@ -804,7 +870,7 @@
         </div>
 
         <form id="studentRegForm" onsubmit="handleStudentRegister(event)">
-          <div class="grid-2">
+          <div class="grid-3">
             <div class="form-group">
               <label class="field-label">الاسم الثلاثي *</label>
               <input type="text" id="stuName" required placeholder="مثال: أحمد محمود حسن" />
@@ -828,10 +894,7 @@
                 <option value="" disabled selected>اختر المجموعة...</option>
               </select>
             </div>
-            <div class="form-group">
-              <label class="field-label">رقم الهاتف (أو ولي الأمر) *</label>
-              <input type="text" id="stuPhone" required placeholder="01xxxxxxxxx" />
-            </div>
+            
           </div>
           <button type="submit" class="btn btn-primary btn-lg">الانتقال إلى تعليمات الامتحان ←</button>
         </form>
@@ -1951,9 +2014,7 @@
       sanitizeStudentIdInput(idInput);
       const id = idInput.value.trim();
       const group = document.getElementById('stuGroup').value;
-      const phone = document.getElementById('stuPhone').value.trim();
-
-      if (!name || !id || !group || !phone) {
+      if (!name || !id || !group) {
         showToast('يرجى استكمال جميع البيانات المطلوبة');
         return;
       }
@@ -1968,7 +2029,7 @@
         return;
       }
 
-      session.student = { name, id, group, phone };
+      session.student = { name, id, group };
       document.getElementById('agreeRulesCheckbox').checked = false;
       toggleStartExamBtn();
       switchScreen('instructionsScreen');
@@ -3244,6 +3305,11 @@
 
       const html = `<!DOCTYPE html>
 <html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>تقرير الطلاب</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="./LOGO_NAME.png" />
+  <link rel="shortcut icon" type="image/png" href="./LOGO_NAME.png" />
+  <link rel="apple-touch-icon" href="./LOGO_NAME.png" />
+
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
   @page { size: A4; margin: 12mm; }
@@ -3260,13 +3326,358 @@
   .q.ok .st { color: #059669; } .q.bad .st { color: #dc2626; } .q.na .st { color: #64748b; }
   img { display: block; max-width: 100%; max-height: 240px; object-fit: contain; margin: 0 auto 6px; }
   .ans { font-size: 13px; } .miss { color: #b45309; font-size: 12px; margin-bottom: 6px; }
-</style></head><body>${sections}
+
+    /* Particles Canvas */
+    #particles-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.25;
+    }
+
+    /* Enhanced animations */
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInLeft {
+      from { opacity: 0; transform: translateX(-30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes fadeInRight {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+      50% { transform: scale(1.05); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5); }
+    }
+
+    @keyframes shimmer {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 5px rgba(37, 99, 235, 0.5), 0 0 10px rgba(37, 99, 235, 0.3); }
+      50% { box-shadow: 0 0 10px rgba(37, 99, 235, 0.8), 0 0 20px rgba(37, 99, 235, 0.5), 0 0 30px rgba(37, 99, 235, 0.3); }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* Apply animations */
+    .topbar {
+      animation: slideDown 0.6s var(--ease-spring);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.08);
+    }
+
+    .brand-mini {
+      animation: fadeInLeft 0.8s var(--ease-spring);
+    }
+
+    .brand-mini img {
+      animation: float 3s ease-in-out infinite;
+      transition: all 0.4s var(--ease-spring);
+    }
+
+    .brand-mini img:hover {
+      transform: scale(1.08) rotate(3deg);
+      box-shadow: 0 8px 25px -4px rgba(37, 99, 235, 0.4);
+    }
+
+    .brand-badge {
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+
+    .top-actions {
+      animation: fadeInRight 0.8s var(--ease-spring);
+    }
+
+    .hero-logo {
+      animation: float 4s ease-in-out infinite, glow 3s ease-in-out infinite;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .hero-logo:hover {
+      transform: scale(1.05) rotate(2deg);
+    }
+
+    .pill {
+      animation: bounce 2s ease-in-out infinite;
+      transition: all 0.3s ease;
+    }
+
+    .pill:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: cardAppear 0.6s var(--ease-spring);
+    }
+
+    @keyframes cardAppear {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transition: left 0.6s;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-float);
+    }
+
+    .card:hover::before {
+      left: 100%;
+    }
+
+    .btn {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .tab-btn {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .tab-btn::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transition: width 0.3s ease;
+    }
+
+    .tab-btn:hover::after {
+      width: 100%;
+    }
+
+    .tab-btn.active::after {
+      width: 100%;
+    }
+
+    .tab-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .choice-btn {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .choice-btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 8px 20px -6px rgba(37, 99, 235, 0.3);
+    }
+
+    .choice-btn.selected {
+      animation: pulse 0.5s ease;
+    }
+
+    .meta-box {
+      transition: all 0.3s ease;
+    }
+
+    .meta-box:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 20px -4px rgba(37, 99, 235, 0.2);
+    }
+
+    .hero-card::before {
+      background: linear-gradient(90deg, var(--primary), var(--accent), #06b6d4);
+      background-size: 200% 100%;
+      animation: shimmer 3s linear infinite;
+    }
+
+    /* Smooth body background */
+    body {
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 50%, rgba(37, 99, 235, 0.08) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 50%, rgba(124, 58, 237, 0.08) 0%, transparent 50%);
+      animation: rotateBackground 20s ease-in-out infinite;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    @keyframes rotateBackground {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(180deg); }
+    }
+
+  </style></head><body>
+  <!-- Particles Background -->
+  <canvas id="particles-canvas"></canvas>
+
+${sections}
 <script>window.addEventListener('load', function () { setTimeout(function () { window.print(); }, 300); });<\/script>
 </body></html>`;
 
       w.document.open();
       w.document.write(html);
       w.document.close();
+    }
+
+
+    // Particles Animation
+    function initParticles() {
+      const canvas = document.getElementById('particles-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      
+      const particles = [];
+      const particleCount = 25;
+      
+      class Particle {
+        constructor() {
+          this.x = Math.random() * canvas.width;
+          this.y = Math.random() * canvas.height;
+          this.size = Math.random() * 3 + 1;
+          this.speedX = Math.random() * 0.3 - 0.15;
+          this.speedY = Math.random() * 0.3 - 0.15;
+          this.opacity = Math.random() * 0.3 + 0.1;
+        }
+        
+        update() {
+          this.x += this.speedX;
+          this.y += this.speedY;
+          
+          if (this.x > canvas.width) this.x = 0;
+          else if (this.x < 0) this.x = canvas.width;
+          
+          if (this.y > canvas.height) this.y = 0;
+          else if (this.y < 0) this.y = canvas.height;
+        }
+        
+        draw() {
+          ctx.fillStyle = `rgba(37, 99, 235, ${this.opacity})`;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      
+      for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+      }
+      
+      function connectParticles() {
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < 100) {
+              ctx.strokeStyle = `rgba(37, 99, 235, ${0.08 * (1 - distance / 100)})`;
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+      }
+      
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        for (let particle of particles) {
+          particle.update();
+          particle.draw();
+        }
+        
+        connectParticles();
+        requestAnimationFrame(animate);
+      }
+      
+      animate();
+      
+      window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+    }
+
+    // Initialize particles after page load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initParticles);
+    } else {
+      initParticles();
     }
 
     initApp();
